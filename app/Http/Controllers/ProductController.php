@@ -3,19 +3,24 @@
 namespace App\Http\Controllers;
 
 use App\Models\Product;
+use App\Models\Brand;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Redirect;
 
+use Inertia\Inertia;
+
 class ProductController extends Controller
 {
-    /**
-     * Display a listing of the resource.
-     *
-     * @return \Illuminate\Http\Response
-     */
+
     public function index()
     {
-        //
+        $brands = Brand::all();
+        $products = Product::all();
+
+        return Inertia::render('Admin/Products', [
+            'brands' => $brands,
+            'products' => $products
+        ]);
     }
 
     /**
@@ -38,14 +43,13 @@ class ProductController extends Controller
     {
         $request->validate([
             'name' => ['required'],
-            'slug' => ['required'],
             'sku' => ['required'],
             'brand_id' => ['required'],
             'quantity' => ['required'],
             'price' => ['required'],
         ]);
 
-        Product::create($request->except('token'));
+        Product::create($request);
 
         return Redirect::route('admin/products');
     }

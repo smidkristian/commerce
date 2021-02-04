@@ -34,9 +34,7 @@ Route::middleware(['auth:sanctum', 'verified'])->get('/admin/dashboard', functio
 
 // PRODUCT
 
-Route::middleware(['auth:sanctum', 'verified'])->get('admin/products', function () {
-    return Inertia::render('Admin/Products');
-})->name('admin/products');
+Route::middleware(['auth:sanctum', 'verified'])->get('admin/products', [ProductController::class, 'index'])->name('admin/products');
 
 Route::post('admin/store-product', [ProductController::class, 'store'])->name('store-product');
 
@@ -45,3 +43,5 @@ Route::post('admin/store-product', [ProductController::class, 'store'])->name('s
 Route::middleware(['auth:sanctum', 'verified'])->get('admin/brands', [BrandController::class, 'index'])->name('admin/brands');
 
 Route::post('admin/store-brand', [BrandController::class, 'store'])->name('store-brand');
+Route::post('admin/update-brand', [BrandController::class, 'update'])->name('update-brand');
+Route::post('admin/delete-brand', [BrandController::class, 'destroy'])->name('delete-brand');

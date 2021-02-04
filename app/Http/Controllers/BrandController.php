@@ -82,7 +82,16 @@ class BrandController extends Controller
      */
     public function update(Request $request, Brand $brand)
     {
-        //
+        $request->validate([
+            'id' => ['required'],
+            'name' => ['required'],
+        ]);
+
+        $target = Brand::find($request->id);
+
+        $target->update($request->except('token'));
+
+        return Redirect::route('admin/brands');
     }
 
     /**
@@ -91,8 +100,10 @@ class BrandController extends Controller
      * @param  \App\Models\Brand  $brand
      * @return \Illuminate\Http\Response
      */
-    public function destroy(Brand $brand)
+    public function destroy(Request $request)
     {
-        //
+        Brand::destroy($request->id);
+
+        return Redirect::route('admin/brands');
     }
 }

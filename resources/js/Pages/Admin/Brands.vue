@@ -1,62 +1,112 @@
 <template>
     <app-layout>
-        <div class="flex flex-row justify-end mr-10 mt-4">
+        <div class="flex justify-end mt-6 mr-2 md:mr-10" id="editing">
 
-            <span v-if="storeConfirmed" class="mr-6 xyz-in" xyz="fade-100% duration-10">Saved.</span>
+            <div v-if="create == false">
+                <span v-if="storeConfirmed || updateConfirmed" class="mr-6 xyz-out text-md" xyz="fade-100% out-delay-6 duration-6">Saved.</span>
 
-            <button @click="createBrand()" class="bg-gray-800 py-2 px-4 uppercase text-sm text-gray-200 rounded focus:outline-none">
-                Create New Brand
-            </button>
+                <button @click="createBrand()" class="btn">
+                    Create New Brand
+                </button>
+            </div>
+            <div v-else>
+                <button @click="create = false" class="btn">
+                    Back
+                </button>
+            </div>
         </div>
-        <div class="flex justify-center mt-10">
-            <table v-if="create == false" class="table-auto p-2 md:w-3/5">
-                <thead>
+
+        <!-- _______________________________________________________________________________________________________________ CREATE NEW BRAND -->
+
+        <div v-if="create == true"
+            class="mx-auto w-full md:w-3/5 bg-white py-8 flex justify-center rounded-md mt-10 shadow-sm xyz-in"
+            xyz="fade-100% up duration-10">
+            <form @submit.prevent="storeBrand()" class="flex flex-col">
+
+            <div class="flex flex-col">
+                <label for="name">Name:</label>
+                <input type="text" id="name" v-model="createBrandForm.name" class="input">
+                <span class="text-xs text-red-700 uppercase mt-2">{{ errors.name }}</span>
+            </div>
+
+            <div class="flex flex-col mt-4">
+                <label for="description">Description:</label>
+                <input type="text" id="description" v-model="createBrandForm.description" class="input">
+                <span class="text-xs text-red-700 uppercase mt-2">{{ errors.description }}</span>
+            </div>
+            <div class="flex justify-end">
+                <button type="submit" class="btn">Save</button>
+            </div>
+            </form>
+        </div>
+
+        <!-- _______________________________________________________________________________________________________________ UPDATE BRAND -->
+
+        <div v-if="editing != null && create == false"
+            class="mx-auto w-full md:w-3/5 bg-white py-8 flex justify-center rounded-md mt-10 shadow-sm xyz-in"
+            xyz="fade-100% up duration-10">
+            <form @submit.prevent="updateBrand(editBrandForm.name);" class="flex flex-col">
+                <div class="flex flex-col">
+                    <label for="name">Name:</label>
+                    <input type="text" id="name" v-model="editBrandForm.name" class="input">
+                    <span class="text-xs text-red-700 uppercase mt-2">{{ errors.name }}</span>
+                </div>
+                <div class="flex flex-col mt-4">
+                    <label for="description">Description:</label>
+                    <input type="text" id="description" v-model="editBrandForm.description" class="input">
+                    <span class="text-xs text-red-700 uppercase mt-2">{{ errors.description }}</span>
+                </div>
+                <div class="flex justify-end">
+                    <button type="submit" class="btn">Save</button>
+                </div>
+            </form>
+        </div>
+
+         <!-- _______________________________________________________________________________________________________________ TABLE -->
+
+        <div v-if="create == false"
+            class="mx-auto w-full p-2 md:w-4/5 bg-gray-200 py-8 flex justify-center rounded-md mt-10 shadow-inner">
+            <table class="table-auto w-full md:w-4/5">
+                <thead class="bg-gray-100 shadow-sm mb-4">
                     <tr>
-                        <th class="text-left pb-4 px-2">
+                        <th class="text-center py-4 px-2">
                             ID
                         </th>
-                        <th class="text-left pb-4 px-2">
+                        <th class="text-left py-4 px-2">
                             Name
                         </th>
-                        <th class="text-left pb-4 px-2">
+                        <th class="text-left py-4 px-2">
                             Description
                         </th>
-                        <th class="text-left pb-4 px-2">
+                        <th class="text-center py-4 px-2 action">
                             Action
                         </th>
                     </tr>
                 </thead>
                 <tbody>
-                    <tr :key="brand.id" v-for="brand in brands">
-                        <td class="rowID">
+                    <tr :key="brand.id" v-for="brand in brands" :id="brand.name">
+                        <td class="text-center py-4 px-2">
                             {{brand.id}}
                         </td>
-                        <td class="rowName">
-                            {{brand.name}}
+                        <td class="text-left py-4 px-2">
+                            <span v-if="editing != brand.id">{{brand.name}}</span>
+                            <span v-else>Editing</span>
                         </td>
-                        <td class="rowDesc">
-                            {{brand.description}}
+                        <td class="text-left py-4 px-2">
+                            <span v-if="editing != brand.id">{{brand.description}}</span>
+                            <span v-else>Editing</span>
                         </td>
-                        <td class="flex flex-col pl-6 md:flex-row">
-                            <button>Edit</button>
-                            <button class="pt-4 md:pl-6 md:pt-0">Delete</button>
+                        <td class="text-center action">
+                            <div v-if="editing != brand.id" class="flex justify-center items-center">
+                                <button @click="editBrand(brand)" class="bg-gray-800 uppercase font-semibold text-gray-100 text-xs rounded-md py-2 px-4">Edit</button>
+                            </div>
+                            <div v-else>
+                                <button @click="resetEditForm()" class="bg-gray-800 uppercase font-semibold text-gray-100 text-xs rounded-md py-2 px-4">Cancle</button>
+                            </div>
                         </td>
                     </tr>
                 </tbody>
             </table>
-            <form v-if="create == true" @submit.prevent="storeBrand()" class="flex flex-col">
-
-                <div class="flex flex-col">
-                    <label for="name">Name:</label>
-                    <input type="text" id="name" v-model="createBrandForm.name">
-                </div>
-
-                <div class="flex flex-col">
-                    <label for="description">Description:</label>
-                    <input type="text" id="description" v-model="createBrandForm.description">
-                </div>
-                <button type="submit">Save</button>
-            </form>
         </div>
     </app-layout>
 </template>
@@ -64,9 +114,11 @@
 <script>
 import AppLayout from '@/Layouts/AppLayout'
     export default {
-        props: [
-            'brands',
-        ],
+        props: {
+            brands: Array,
+
+            errors: Object
+        },
 
         components: {
             AppLayout,
@@ -76,10 +128,18 @@ import AppLayout from '@/Layouts/AppLayout'
             return {
 
                 create: false,
+                editing: null,
 
                 storeConfirmed: false,
+                updateConfirmed: false,
+                deleteConfirmed: false,
 
                 createBrandForm: {
+                    name: null,
+                    description: null
+                },
+                editBrandForm: {
+                    id: null,
                     name: null,
                     description: null
                 },
@@ -90,21 +150,60 @@ import AppLayout from '@/Layouts/AppLayout'
         methods: {
             createBrand() {
                 this.create = true;
-                console.log(this.createBrandForm);
+                this.editing = null;
             },
             storeBrand() {
                 this.$inertia.post(route('store-brand'), this.createBrandForm, {
                     onSuccess: () => {
-                        this.resetForm();
+                        this.resetCreateForm();
                         this.storeConfirmed = true;
                         setTimeout(() => this.storeConfirmed = false, 2000);
+                    },
+                    onError: () => {
+                        console.log(this.errors);
                     }
                 });
             },
-            resetForm() {
+            editBrand(brand) {
+                this.editing = this.editBrandForm.id = brand.id;
+                this.editBrandForm.name = brand.name;
+                this.editBrandForm.description = brand.description;
+
+                document.querySelector('#editing').scrollIntoView({
+                behavior: 'smooth'
+                });
+            },
+            updateBrand(id) {
+                this.$inertia.post(route('update-brand'), this.editBrandForm, {
+                    onSuccess: () => {
+                        this.updateConfirmed = true;
+                        setTimeout(() => this.updateConfirmed = false, 2000);
+
+                        document.querySelector('#' + id).scrollIntoView({
+                        behavior: 'smooth'
+                        });
+
+                        this.resetEditForm();
+                    }
+                });
+            },
+            deleteBrand(id) {
+                this.$inertia.post(route('delete-brand'), id, {
+                    onSuccess: () => {
+                        this.resetCreateForm();
+                        this.deleteConfirmed = true;
+                        setTimeout(() => this.deleteConfirmed = false, 2000);
+                    }
+                });
+            },
+            resetCreateForm() {
                 this.createBrandForm.name = this.createBrandForm.description = null;
                 this.create = false;
-            }
+            },
+            resetEditForm() {
+                this.editBrandForm.id = this.editing = this.editBrandForm.name = this.editBrandForm.description = null;
+            },
+
         }
     }
 </script>
@@ -112,15 +211,18 @@ import AppLayout from '@/Layouts/AppLayout'
 <style scoped>
 
     tr {
-        border-bottom: solid 1px;
+        border-bottom: solid 0.5px rgb(209, 209, 209);
+    }
+    th {
+        padding-left: 1rem;
     }
     td {
-        padding: 8px 6px ;
+        padding-left: 1rem;
     }
     td:hover {
-        background-color: aqua;
+        background-color: rgb(235, 235, 235);
     }
-    @media screen and (max-width: 768px) {
-
+    .action {
+        padding: 0;
     }
 </style>
