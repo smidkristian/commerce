@@ -1972,8 +1972,6 @@ __webpack_require__.r(__webpack_exports__);
   },
   data: function data() {
     return {
-      storeConfirmed: false,
-      updateConfirmed: false,
       productForm: this.form
     };
   },
@@ -1987,6 +1985,8 @@ __webpack_require__.r(__webpack_exports__);
 
       this.$inertia.post(route('store-product'), this.productForm, {
         onSuccess: function onSuccess() {
+          _this.$emit('finished');
+
           _this.resetForm();
         },
         onError: function onError() {
@@ -2003,6 +2003,8 @@ __webpack_require__.r(__webpack_exports__);
 
       this.$inertia.post(route('update-product'), this.productForm, {
         onSuccess: function onSuccess() {
+          _this2.$emit('finished');
+
           _this2.resetForm();
         },
         onError: function onError() {
@@ -2017,6 +2019,8 @@ __webpack_require__.r(__webpack_exports__);
         id: id
       }, {
         onSuccess: function onSuccess() {
+          _this3.$emit('finished');
+
           _this3.resetForm();
         },
         onError: function onError() {
@@ -4118,14 +4122,12 @@ __webpack_require__.r(__webpack_exports__);
   },
   methods: {
     createProduct: function createProduct() {
-      this.create = true;
       this.resetForm();
+      this.create = true;
     },
     editForm: function editForm(product) {
       var _this = this;
 
-      console.log(product.id);
-      this.productForm.id = product.id;
       Object.keys(this.productForm).forEach(function (key) {
         _this.productForm[key] = product[key];
       });
@@ -4140,14 +4142,19 @@ __webpack_require__.r(__webpack_exports__);
           _this2.productForm[key] = null;
         }
       });
-    } // message() {
-    //     let urlParams = new URLSearchParams(window.location.search);
-    //     if (urlParams.has('message')) {
-    //         this.flash = urlParams.get('message');
-    //         setTimeout(() => this.flash = null, 2000);
-    //     }
-    // }
+    },
+    message: function message() {
+      var _this3 = this;
 
+      var urlParams = new URLSearchParams(window.location.search);
+
+      if (urlParams.has('message')) {
+        this.flash = urlParams.get('message');
+        setTimeout(function () {
+          return _this3.flash = null;
+        }, 2000);
+      }
+    }
   }
 });
 
@@ -6107,7 +6114,7 @@ __webpack_require__.r(__webpack_exports__);
 
 var ___CSS_LOADER_EXPORT___ = _node_modules_css_loader_dist_runtime_api_js__WEBPACK_IMPORTED_MODULE_0___default()(function(i){return i[1]});
 // Module
-___CSS_LOADER_EXPORT___.push([module.id, "\ntr[data-v-8d2e5fa6] {\n    border-bottom: solid 0.5px rgb(209, 209, 209);\n}\nth[data-v-8d2e5fa6] {\n    padding-left: 1rem;\n}\ntd[data-v-8d2e5fa6] {\n    padding-left: 1rem;\n}\ntd[data-v-8d2e5fa6]:hover {\n    background-color: rgb(235, 235, 235);\n}\n.action[data-v-8d2e5fa6] {\n    padding: 0;\n}\n.description[data-v-8d2e5fa6] {\n    max-width: 5vw !important;\n    white-space: nowrap;\n    overflow: hidden;\n    text-overflow: ellipsis;\n}\n", ""]);
+___CSS_LOADER_EXPORT___.push([module.id, "\ntr[data-v-8d2e5fa6] {\n    border-bottom: solid 0.5px rgb(209, 209, 209);\n}\nth[data-v-8d2e5fa6] {\n    padding-left: 1rem;\n}\ntd[data-v-8d2e5fa6] {\n    padding-left: 1rem;\n}\ntd[data-v-8d2e5fa6]:hover {\n    background-color: rgb(235, 235, 235);\n}\n.description[data-v-8d2e5fa6] {\n    max-width: 5vw !important;\n    white-space: nowrap;\n    overflow: hidden;\n    text-overflow: ellipsis;\n}\n", ""]);
 // Exports
 /* harmony default export */ const __WEBPACK_DEFAULT_EXPORT__ = (___CSS_LOADER_EXPORT___);
 
@@ -33479,6 +33486,18 @@ var render = function() {
     [
       _vm._v(" "),
       _c("div", { staticClass: "flex justify-end mr-10 mt-4" }, [
+        _vm.flash != null
+          ? _c(
+              "span",
+              {
+                staticClass:
+                  "flex items-end text-md text-gray-700 mr-8 xyz-out",
+                attrs: { xyz: "fade-100% out-delay-6 duration-6" }
+              },
+              [_vm._v(_vm._s(_vm.flash))]
+            )
+          : _vm._e(),
+        _vm._v(" "),
         _vm.create || _vm.productForm.id != null
           ? _c(
               "button",
@@ -33521,6 +33540,11 @@ var render = function() {
                   products: _vm.products,
                   form: _vm.productForm,
                   errors: _vm.errors
+                },
+                on: {
+                  finished: function($event) {
+                    ;(_vm.create = false), _vm.message()
+                  }
                 }
               })
             : _vm._e()
@@ -33602,7 +33626,7 @@ var render = function() {
                   )
                 ]),
                 _vm._v(" "),
-                _c("th", { staticClass: "text-center py-4 px-2 action" }, [
+                _c("th", { staticClass: "text-center py-4 px-2" }, [
                   _vm._v(
                     "\n                        Action\n                    "
                   )
@@ -33705,7 +33729,7 @@ var render = function() {
                         : _c("span", [_vm._v("...")])
                     ]),
                     _vm._v(" "),
-                    _c("td", { staticClass: "text-center action" }, [
+                    _c("td", { staticClass: "text-center px-2" }, [
                       _vm.productForm.id != product.id
                         ? _c(
                             "div",

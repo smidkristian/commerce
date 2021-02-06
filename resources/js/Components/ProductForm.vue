@@ -106,9 +106,6 @@
         data() {
 
             return {
-                storeConfirmed: false,
-                updateConfirmed: false,
-
                 productForm: this.form,
 
             }
@@ -123,6 +120,7 @@
                 }
                 this.$inertia.post(route('store-product'), this.productForm, {
                     onSuccess: () => {
+                        this.$emit('finished')
                         this.resetForm();
                     },
                     onError: () => {
@@ -138,6 +136,7 @@
                 }
                 this.$inertia.post(route('update-product'), this.productForm, {
                     onSuccess: () => {
+                        this.$emit('finished')
                         this.resetForm();
                     },
                     onError: () => {
@@ -150,6 +149,7 @@
 
                 this.$inertia.post(route('delete-product'), { id: id }, {
                     onSuccess: () => {
+                        this.$emit('finished')
                         this.resetForm();
                     },
                     onError: () => {

@@ -8,7 +8,7 @@
 
         <div class="flex justify-end mr-10 mt-4">
 
-            <!-- <span class="flex items-end text-md text-gray-700 mr-8 xyz-out" xyz="fade-100% out-delay-6 duration-6">{{flash}}</span> -->
+            <span v-if="flash != null" class="flex items-end text-md text-gray-700 mr-8 xyz-out" xyz="fade-100% out-delay-6 duration-6">{{flash}}</span>
 
             <button v-if="create || productForm.id != null" @click="create = false, resetForm()" class="btn">Back</button>
 
@@ -17,7 +17,7 @@
             </button>
         </div>
         <div class="flex justify-center mt-10">
-            <product-form :brands="brands" :products="products" :form="productForm" :errors="errors"
+            <product-form @finished="create = false, message()" :brands="brands" :products="products" :form="productForm" :errors="errors"
             v-if="create == true || productForm.id != null" />
         </div>
         <div class="mx-auto my-4 w-full p-2 md:w-4/5 bg-gray-200 py-8 px-4 overflow-x-auto rounded-md mt-10 shadow-inner">
@@ -60,7 +60,7 @@
                         <th class="text-left py-4 px-2">
                             Featured
                         </th>
-                        <th class="text-center py-4 px-2 action">
+                        <th class="text-center py-4 px-2">
                             Action
                         </th>
                     </tr>
@@ -118,7 +118,7 @@
                             <span v-if="productForm.id != product.id">{{product.featured}}</span>
                             <span v-else>...</span>
                         </td>
-                        <td class="text-center action">
+                        <td class="text-center px-2">
                             <div v-if="productForm.id != product.id" class="flex justify-center items-center">
                                 <button @click="editForm(product)" class="bg-gray-800 uppercase font-semibold text-gray-100 text-xs rounded-md py-2 px-4">Edit</button>
                             </div>
@@ -177,15 +177,12 @@ import ProductForm from '../../Components/ProductForm'
 
             createProduct() {
 
-                this.create = true;
                 this.resetForm();
+                this.create = true;
 
             },
 
             editForm(product) {
-
-                console.log(product.id);
-                this.productForm.id = product.id;
 
                 Object.keys(this.productForm).forEach( key => {
                     this.productForm[key] = product[key];
@@ -204,14 +201,14 @@ import ProductForm from '../../Components/ProductForm'
                 });
             },
 
-            // message() {
+            message() {
 
-            //     let urlParams = new URLSearchParams(window.location.search);
-            //     if (urlParams.has('message')) {
-            //         this.flash = urlParams.get('message');
-            //         setTimeout(() => this.flash = null, 2000);
-            //     }
-            // }
+                let urlParams = new URLSearchParams(window.location.search);
+                if (urlParams.has('message')) {
+                    this.flash = urlParams.get('message');
+                    setTimeout(() => this.flash = null, 2000);
+                }
+            }
         }
     }
 </script>
@@ -228,9 +225,6 @@ import ProductForm from '../../Components/ProductForm'
     }
     td:hover {
         background-color: rgb(235, 235, 235);
-    }
-    .action {
-        padding: 0;
     }
     .description {
         max-width: 5vw !important;
