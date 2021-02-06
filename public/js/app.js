@@ -1963,79 +1963,30 @@ __webpack_require__.r(__webpack_exports__);
 //
 //
 //
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
 /* harmony default export */ const __WEBPACK_DEFAULT_EXPORT__ = ({
-  props: ['brands', 'products', 'errors'],
+  props: {
+    brands: Array,
+    products: Array,
+    errors: Object,
+    form: Object
+  },
   data: function data() {
     return {
       storeConfirmed: false,
-      createProductForm: {
-        name: null,
-        slug: null,
-        sku: null,
-        brand_id: null,
-        color: null,
-        quantity: null,
-        weight: null,
-        price: null,
-        sale_price: null,
-        description: null,
-        status: 0,
-        featured: 0
-      }
+      updateConfirmed: false,
+      productForm: this.form
     };
   },
   methods: {
     storeProduct: function storeProduct() {
       var _this = this;
 
-      if (this.createProductForm.name != null) {
+      if (this.productForm.name != null) {
         this.slug();
       }
 
-      this.$inertia.post(route('store-product'), this.createProductForm, {
+      this.$inertia.post(route('store-product'), this.productForm, {
         onSuccess: function onSuccess() {
-          _this.storeConfirmed = true;
-          setTimeout(function () {
-            return _this.storeConfirmed = false;
-          }, 2000);
-
           _this.resetForm();
         },
         onError: function onError() {
@@ -2043,17 +1994,47 @@ __webpack_require__.r(__webpack_exports__);
         }
       });
     },
-    slug: function slug() {
-      this.createProductForm.slug = this.createProductForm.name.toLowerCase().replace(/\s/g, '-');
-    },
-    resetForm: function resetForm() {
+    updateProduct: function updateProduct() {
       var _this2 = this;
 
-      Object.keys(this.createProductForm).forEach(function (key) {
+      if (this.productForm.name != null) {
+        this.slug();
+      }
+
+      this.$inertia.post(route('update-product'), this.productForm, {
+        onSuccess: function onSuccess() {
+          _this2.resetForm();
+        },
+        onError: function onError() {
+          console.log(_this2.errors);
+        }
+      });
+    },
+    deleteProduct: function deleteProduct(id) {
+      var _this3 = this;
+
+      this.$inertia.post(route('delete-product'), {
+        id: id
+      }, {
+        onSuccess: function onSuccess() {
+          _this3.resetForm();
+        },
+        onError: function onError() {
+          console.log(_this3.errors);
+        }
+      });
+    },
+    slug: function slug() {
+      this.productForm.slug = this.productForm.name.toLowerCase().replace(/\s/g, '-');
+    },
+    resetForm: function resetForm() {
+      var _this4 = this;
+
+      Object.keys(this.productForm).forEach(function (key) {
         if (key == 'status' || key == 'featured') {
-          _this2.createProductForm[key] = 0;
+          _this4.productForm[key] = 0;
         } else {
-          _this2.createProductForm[key] = null;
+          _this4.productForm[key] = null;
         }
       });
     }
@@ -3803,6 +3784,13 @@ __webpack_require__.r(__webpack_exports__);
 //
 //
 //
+//
+//
+//
+//
+//
+//
+//
 
 /* harmony default export */ const __WEBPACK_DEFAULT_EXPORT__ = ({
   props: {
@@ -3880,9 +3868,11 @@ __webpack_require__.r(__webpack_exports__);
     deleteBrand: function deleteBrand(id) {
       var _this3 = this;
 
-      this.$inertia.post(route('delete-brand'), id, {
+      this.$inertia.post(route('delete-brand'), {
+        id: id
+      }, {
         onSuccess: function onSuccess() {
-          _this3.resetCreateForm();
+          _this3.resetEditForm();
 
           _this3.deleteConfirmed = true;
           setTimeout(function () {
@@ -4000,23 +3990,164 @@ __webpack_require__.r(__webpack_exports__);
 //
 //
 //
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
 
 
 /* harmony default export */ const __WEBPACK_DEFAULT_EXPORT__ = ({
-  props: ['brands', 'products', 'errors'],
+  props: {
+    brands: Array,
+    products: Array,
+    errors: Object
+  },
   components: {
     AppLayout: _Layouts_AppLayout__WEBPACK_IMPORTED_MODULE_0__.default,
     ProductForm: _Components_ProductForm__WEBPACK_IMPORTED_MODULE_1__.default
   },
   data: function data() {
     return {
-      create: false
+      create: false,
+      flash: null,
+      productForm: {
+        id: null,
+        name: null,
+        slug: null,
+        sku: null,
+        brand_id: null,
+        color: null,
+        quantity: null,
+        weight: null,
+        price: null,
+        sale_price: null,
+        description: null,
+        status: 0,
+        featured: 0
+      }
     };
   },
   methods: {
     createProduct: function createProduct() {
       this.create = true;
-    }
+      this.resetForm();
+    },
+    editForm: function editForm(product) {
+      var _this = this;
+
+      console.log(product.id);
+      this.productForm.id = product.id;
+      Object.keys(this.productForm).forEach(function (key) {
+        _this.productForm[key] = product[key];
+      });
+    },
+    resetForm: function resetForm() {
+      var _this2 = this;
+
+      Object.keys(this.productForm).forEach(function (key) {
+        if (key == 'status' || key == 'featured') {
+          _this2.productForm[key] = 0;
+        } else {
+          _this2.productForm[key] = null;
+        }
+      });
+    } // message() {
+    //     let urlParams = new URLSearchParams(window.location.search);
+    //     if (urlParams.has('message')) {
+    //         this.flash = urlParams.get('message');
+    //         setTimeout(() => this.flash = null, 2000);
+    //     }
+    // }
+
   }
 });
 
@@ -5928,7 +6059,7 @@ __webpack_require__.r(__webpack_exports__);
 
 var ___CSS_LOADER_EXPORT___ = _node_modules_css_loader_dist_runtime_api_js__WEBPACK_IMPORTED_MODULE_0___default()(function(i){return i[1]});
 // Module
-___CSS_LOADER_EXPORT___.push([module.id, "\nform div[data-v-57271850] {\n    margin-top: 1rem;\n}\n", ""]);
+___CSS_LOADER_EXPORT___.push([module.id, "\nform div[data-v-57271850] {\n    margin-top: 1rem;\n}\nform div label[data-v-57271850] {\n    margin-bottom: 0.25rem;\n}\n", ""]);
 // Exports
 /* harmony default export */ const __WEBPACK_DEFAULT_EXPORT__ = (___CSS_LOADER_EXPORT___);
 
@@ -5952,7 +6083,7 @@ __webpack_require__.r(__webpack_exports__);
 
 var ___CSS_LOADER_EXPORT___ = _node_modules_css_loader_dist_runtime_api_js__WEBPACK_IMPORTED_MODULE_0___default()(function(i){return i[1]});
 // Module
-___CSS_LOADER_EXPORT___.push([module.id, "\ntr[data-v-075f88d5] {\n    border-bottom: solid 0.5px rgb(209, 209, 209);\n}\nth[data-v-075f88d5] {\n    padding-left: 1rem;\n}\ntd[data-v-075f88d5] {\n    padding-left: 1rem;\n}\ntd[data-v-075f88d5]:hover {\n    background-color: rgb(235, 235, 235);\n}\n.action[data-v-075f88d5] {\n    padding: 0;\n}\n", ""]);
+___CSS_LOADER_EXPORT___.push([module.id, "\ntr[data-v-075f88d5] {\n    border-bottom: solid 0.5px rgb(209, 209, 209);\n}\nth[data-v-075f88d5] {\n    padding-left: 1rem;\n}\ntd[data-v-075f88d5] {\n    padding-left: 1rem;\n}\ntd[data-v-075f88d5]:hover {\n    background-color: rgb(235, 235, 235);\n}\n.action[data-v-075f88d5] {\n    padding: 0;\n}\n.description[data-v-075f88d5] {\n    max-width: 5vw !important;\n    white-space: nowrap;\n    overflow: hidden;\n    text-overflow: ellipsis;\n}\n", ""]);
 // Exports
 /* harmony default export */ const __WEBPACK_DEFAULT_EXPORT__ = (___CSS_LOADER_EXPORT___);
 
@@ -5976,7 +6107,7 @@ __webpack_require__.r(__webpack_exports__);
 
 var ___CSS_LOADER_EXPORT___ = _node_modules_css_loader_dist_runtime_api_js__WEBPACK_IMPORTED_MODULE_0___default()(function(i){return i[1]});
 // Module
-___CSS_LOADER_EXPORT___.push([module.id, "\nth[data-v-8d2e5fa6] {\n    padding-right: 2rem;\n    padding-top: 1rem;\n}\ntd[data-v-8d2e5fa6] {\n    padding-right: 2rem;\n    padding-top: 1rem;\n}\n", ""]);
+___CSS_LOADER_EXPORT___.push([module.id, "\ntr[data-v-8d2e5fa6] {\n    border-bottom: solid 0.5px rgb(209, 209, 209);\n}\nth[data-v-8d2e5fa6] {\n    padding-left: 1rem;\n}\ntd[data-v-8d2e5fa6] {\n    padding-left: 1rem;\n}\ntd[data-v-8d2e5fa6]:hover {\n    background-color: rgb(235, 235, 235);\n}\n.action[data-v-8d2e5fa6] {\n    padding: 0;\n}\n.description[data-v-8d2e5fa6] {\n    max-width: 5vw !important;\n    white-space: nowrap;\n    overflow: hidden;\n    text-overflow: ellipsis;\n}\n", ""]);
 // Exports
 /* harmony default export */ const __WEBPACK_DEFAULT_EXPORT__ = (___CSS_LOADER_EXPORT___);
 
@@ -29171,13 +29302,16 @@ var render = function() {
   var _c = _vm._self._c || _h
   return _c("div", { staticClass: "bg-white p-6 my-4 rounded-md shadow-md" }, [
     _c("h1", { staticClass: "text-gray-500 text-md py-4" }, [
-      _vm._v("New Product")
+      _vm._v(
+        _vm._s(_vm.productForm.name ? _vm.productForm.name : "New Product")
+      )
     ]),
     _vm._v(" "),
     _c(
       "form",
       {
-        staticClass: "flex flex-col lg:grid lg:grid-cols-2",
+        staticClass: "flex flex-col lg:grid lg:grid-cols-2 xyz-in",
+        attrs: { xyz: "fade-100% duration-10" },
         on: {
           submit: function($event) {
             $event.preventDefault()
@@ -29194,19 +29328,19 @@ var render = function() {
               {
                 name: "model",
                 rawName: "v-model",
-                value: _vm.createProductForm.name,
-                expression: "createProductForm.name"
+                value: _vm.productForm.name,
+                expression: "productForm.name"
               }
             ],
             staticClass: "input",
             attrs: { type: "text", id: "name" },
-            domProps: { value: _vm.createProductForm.name },
+            domProps: { value: _vm.productForm.name },
             on: {
               input: function($event) {
                 if ($event.target.composing) {
                   return
                 }
-                _vm.$set(_vm.createProductForm, "name", $event.target.value)
+                _vm.$set(_vm.productForm, "name", $event.target.value)
               }
             }
           }),
@@ -29224,19 +29358,19 @@ var render = function() {
               {
                 name: "model",
                 rawName: "v-model",
-                value: _vm.createProductForm.sku,
-                expression: "createProductForm.sku"
+                value: _vm.productForm.sku,
+                expression: "productForm.sku"
               }
             ],
             staticClass: "input",
             attrs: { type: "text", id: "sku" },
-            domProps: { value: _vm.createProductForm.sku },
+            domProps: { value: _vm.productForm.sku },
             on: {
               input: function($event) {
                 if ($event.target.composing) {
                   return
                 }
-                _vm.$set(_vm.createProductForm, "sku", $event.target.value)
+                _vm.$set(_vm.productForm, "sku", $event.target.value)
               }
             }
           }),
@@ -29256,8 +29390,8 @@ var render = function() {
                 {
                   name: "model",
                   rawName: "v-model",
-                  value: _vm.createProductForm.brand_id,
-                  expression: "createProductForm.brand_id"
+                  value: _vm.productForm.brand_id,
+                  expression: "productForm.brand_id"
                 }
               ],
               staticClass: "input",
@@ -29273,7 +29407,7 @@ var render = function() {
                       return val
                     })
                   _vm.$set(
-                    _vm.createProductForm,
+                    _vm.productForm,
                     "brand_id",
                     $event.target.multiple ? $$selectedVal : $$selectedVal[0]
                   )
@@ -29303,19 +29437,19 @@ var render = function() {
               {
                 name: "model",
                 rawName: "v-model",
-                value: _vm.createProductForm.color,
-                expression: "createProductForm.color"
+                value: _vm.productForm.color,
+                expression: "productForm.color"
               }
             ],
             staticClass: "input",
             attrs: { type: "text", id: "color" },
-            domProps: { value: _vm.createProductForm.color },
+            domProps: { value: _vm.productForm.color },
             on: {
               input: function($event) {
                 if ($event.target.composing) {
                   return
                 }
-                _vm.$set(_vm.createProductForm, "color", $event.target.value)
+                _vm.$set(_vm.productForm, "color", $event.target.value)
               }
             }
           })
@@ -29329,19 +29463,19 @@ var render = function() {
               {
                 name: "model",
                 rawName: "v-model",
-                value: _vm.createProductForm.quantity,
-                expression: "createProductForm.quantity"
+                value: _vm.productForm.quantity,
+                expression: "productForm.quantity"
               }
             ],
             staticClass: "input",
             attrs: { type: "number", id: "quantity" },
-            domProps: { value: _vm.createProductForm.quantity },
+            domProps: { value: _vm.productForm.quantity },
             on: {
               input: function($event) {
                 if ($event.target.composing) {
                   return
                 }
-                _vm.$set(_vm.createProductForm, "quantity", $event.target.value)
+                _vm.$set(_vm.productForm, "quantity", $event.target.value)
               }
             }
           }),
@@ -29359,19 +29493,19 @@ var render = function() {
               {
                 name: "model",
                 rawName: "v-model",
-                value: _vm.createProductForm.weight,
-                expression: "createProductForm.weight"
+                value: _vm.productForm.weight,
+                expression: "productForm.weight"
               }
             ],
             staticClass: "input",
             attrs: { type: "number", id: "weight" },
-            domProps: { value: _vm.createProductForm.weight },
+            domProps: { value: _vm.productForm.weight },
             on: {
               input: function($event) {
                 if ($event.target.composing) {
                   return
                 }
-                _vm.$set(_vm.createProductForm, "weight", $event.target.value)
+                _vm.$set(_vm.productForm, "weight", $event.target.value)
               }
             }
           })
@@ -29385,19 +29519,19 @@ var render = function() {
               {
                 name: "model",
                 rawName: "v-model",
-                value: _vm.createProductForm.price,
-                expression: "createProductForm.price"
+                value: _vm.productForm.price,
+                expression: "productForm.price"
               }
             ],
             staticClass: "input",
             attrs: { type: "number", id: "price" },
-            domProps: { value: _vm.createProductForm.price },
+            domProps: { value: _vm.productForm.price },
             on: {
               input: function($event) {
                 if ($event.target.composing) {
                   return
                 }
-                _vm.$set(_vm.createProductForm, "price", $event.target.value)
+                _vm.$set(_vm.productForm, "price", $event.target.value)
               }
             }
           }),
@@ -29415,23 +29549,19 @@ var render = function() {
               {
                 name: "model",
                 rawName: "v-model",
-                value: _vm.createProductForm.sale_price,
-                expression: "createProductForm.sale_price"
+                value: _vm.productForm.sale_price,
+                expression: "productForm.sale_price"
               }
             ],
             staticClass: "input",
             attrs: { type: "number", id: "sale_price" },
-            domProps: { value: _vm.createProductForm.sale_price },
+            domProps: { value: _vm.productForm.sale_price },
             on: {
               input: function($event) {
                 if ($event.target.composing) {
                   return
                 }
-                _vm.$set(
-                  _vm.createProductForm,
-                  "sale_price",
-                  $event.target.value
-                )
+                _vm.$set(_vm.productForm, "sale_price", $event.target.value)
               }
             }
           })
@@ -29447,29 +29577,25 @@ var render = function() {
               {
                 name: "model",
                 rawName: "v-model",
-                value: _vm.createProductForm.description,
-                expression: "createProductForm.description"
+                value: _vm.productForm.description,
+                expression: "productForm.description"
               }
             ],
             staticClass: "input",
             attrs: { type: "text", rows: "2", cols: "30", id: "description" },
-            domProps: { value: _vm.createProductForm.description },
+            domProps: { value: _vm.productForm.description },
             on: {
               input: function($event) {
                 if ($event.target.composing) {
                   return
                 }
-                _vm.$set(
-                  _vm.createProductForm,
-                  "description",
-                  $event.target.value
-                )
+                _vm.$set(_vm.productForm, "description", $event.target.value)
               }
             }
           })
         ]),
         _vm._v(" "),
-        _c("div", { staticClass: "flex flex-col lg:ml-4" }, [
+        _c("div", { staticClass: "flex flex-col" }, [
           _c("label", { attrs: { for: "status" } }, [_vm._v("Status:")]),
           _vm._v(" "),
           _c("input", {
@@ -29477,20 +29603,20 @@ var render = function() {
               {
                 name: "model",
                 rawName: "v-model",
-                value: _vm.createProductForm.status,
-                expression: "createProductForm.status"
+                value: _vm.productForm.status,
+                expression: "productForm.status"
               }
             ],
             staticClass: "input",
             attrs: { type: "checkbox", id: "status" },
             domProps: {
-              checked: Array.isArray(_vm.createProductForm.status)
-                ? _vm._i(_vm.createProductForm.status, null) > -1
-                : _vm.createProductForm.status
+              checked: Array.isArray(_vm.productForm.status)
+                ? _vm._i(_vm.productForm.status, null) > -1
+                : _vm.productForm.status
             },
             on: {
               change: function($event) {
-                var $$a = _vm.createProductForm.status,
+                var $$a = _vm.productForm.status,
                   $$el = $event.target,
                   $$c = $$el.checked ? true : false
                 if (Array.isArray($$a)) {
@@ -29498,28 +29624,24 @@ var render = function() {
                     $$i = _vm._i($$a, $$v)
                   if ($$el.checked) {
                     $$i < 0 &&
-                      _vm.$set(
-                        _vm.createProductForm,
-                        "status",
-                        $$a.concat([$$v])
-                      )
+                      _vm.$set(_vm.productForm, "status", $$a.concat([$$v]))
                   } else {
                     $$i > -1 &&
                       _vm.$set(
-                        _vm.createProductForm,
+                        _vm.productForm,
                         "status",
                         $$a.slice(0, $$i).concat($$a.slice($$i + 1))
                       )
                   }
                 } else {
-                  _vm.$set(_vm.createProductForm, "status", $$c)
+                  _vm.$set(_vm.productForm, "status", $$c)
                 }
               }
             }
           })
         ]),
         _vm._v(" "),
-        _c("div", { staticClass: "flex flex-col" }, [
+        _c("div", { staticClass: "flex flex-col lg:ml-4" }, [
           _c("label", { attrs: { for: "featured" } }, [_vm._v("Featured:")]),
           _vm._v(" "),
           _c("input", {
@@ -29527,20 +29649,20 @@ var render = function() {
               {
                 name: "model",
                 rawName: "v-model",
-                value: _vm.createProductForm.featured,
-                expression: "createProductForm.featured"
+                value: _vm.productForm.featured,
+                expression: "productForm.featured"
               }
             ],
             staticClass: "input",
             attrs: { type: "checkbox", id: "featured" },
             domProps: {
-              checked: Array.isArray(_vm.createProductForm.featured)
-                ? _vm._i(_vm.createProductForm.featured, null) > -1
-                : _vm.createProductForm.featured
+              checked: Array.isArray(_vm.productForm.featured)
+                ? _vm._i(_vm.productForm.featured, null) > -1
+                : _vm.productForm.featured
             },
             on: {
               change: function($event) {
-                var $$a = _vm.createProductForm.featured,
+                var $$a = _vm.productForm.featured,
                   $$el = $event.target,
                   $$c = $$el.checked ? true : false
                 if (Array.isArray($$a)) {
@@ -29548,44 +29670,73 @@ var render = function() {
                     $$i = _vm._i($$a, $$v)
                   if ($$el.checked) {
                     $$i < 0 &&
-                      _vm.$set(
-                        _vm.createProductForm,
-                        "featured",
-                        $$a.concat([$$v])
-                      )
+                      _vm.$set(_vm.productForm, "featured", $$a.concat([$$v]))
                   } else {
                     $$i > -1 &&
                       _vm.$set(
-                        _vm.createProductForm,
+                        _vm.productForm,
                         "featured",
                         $$a.slice(0, $$i).concat($$a.slice($$i + 1))
                       )
                   }
                 } else {
-                  _vm.$set(_vm.createProductForm, "featured", $$c)
+                  _vm.$set(_vm.productForm, "featured", $$c)
                 }
               }
             }
           })
         ]),
         _vm._v(" "),
-        _c("div", { staticClass: "flex justify-end lg:grid lg:col-span-2" }, [
-          _c("div", [
-            _vm.storeConfirmed
-              ? _c(
-                  "span",
-                  {
-                    staticClass: "mr-8 xyz-out",
-                    attrs: { xyz: "fade-100% out-delay-6 duration-6" }
-                  },
-                  [_vm._v("Saved.")]
-                )
-              : _vm._e(),
-            _vm._v(" "),
-            _c("button", { staticClass: "btn", attrs: { type: "submit" } }, [
-              _vm._v("Save")
-            ])
-          ])
+        _c("div", { staticClass: "flex lg:grid lg:col-span-2" }, [
+          _vm.productForm.id != null
+            ? _c(
+                "div",
+                { staticClass: "flex w-full justify-between lg:col-span-2" },
+                [
+                  _c("div", [
+                    _c(
+                      "button",
+                      {
+                        staticClass: "btn-danger",
+                        attrs: { type: "button" },
+                        on: {
+                          click: function($event) {
+                            return _vm.deleteProduct(_vm.productForm.id)
+                          }
+                        }
+                      },
+                      [_vm._v("Delete")]
+                    )
+                  ]),
+                  _vm._v(" "),
+                  _c("div", [
+                    _c(
+                      "button",
+                      {
+                        staticClass: "btn",
+                        attrs: { type: "button" },
+                        on: {
+                          click: function($event) {
+                            return _vm.updateProduct()
+                          }
+                        }
+                      },
+                      [_vm._v("Update")]
+                    )
+                  ])
+                ]
+              )
+            : _c(
+                "div",
+                { staticClass: "flex w-full justify-end lg:col-span-2" },
+                [
+                  _c(
+                    "button",
+                    { staticClass: "btn", attrs: { type: "submit" } },
+                    [_vm._v("Save")]
+                  )
+                ]
+              )
         ])
       ]
     )
@@ -31595,7 +31746,7 @@ var render = function() {
       _vm._v(" "),
       _c(
         "div",
-        { staticClass: "min-h-screen bg-gray-100" },
+        { staticClass: "min-h-screen" },
         [
           _c("nav", { staticClass: "bg-white border-b border-gray-100" }, [
             _c(
@@ -32772,380 +32923,453 @@ var render = function() {
   var _vm = this
   var _h = _vm.$createElement
   var _c = _vm._self._c || _h
-  return _c("app-layout", [
-    _c(
-      "div",
-      {
-        staticClass: "flex justify-end mt-6 mr-2 md:mr-10",
-        attrs: { id: "editing" }
-      },
-      [
-        _vm.create == false
-          ? _c("div", [
-              _vm.storeConfirmed || _vm.updateConfirmed
-                ? _c(
-                    "span",
-                    {
-                      staticClass: "mr-6 xyz-out text-md",
-                      attrs: { xyz: "fade-100% out-delay-6 duration-6" }
-                    },
-                    [_vm._v("Saved.")]
-                  )
-                : _vm._e(),
-              _vm._v(" "),
+  return _c(
+    "app-layout",
+    {
+      scopedSlots: _vm._u([
+        {
+          key: "header",
+          fn: function() {
+            return [
               _c(
-                "button",
+                "h2",
                 {
-                  staticClass: "btn",
+                  staticClass:
+                    "font-semibold text-xl text-gray-800 leading-tight"
+                },
+                [_vm._v("\n            Manage Brands\n        ")]
+              )
+            ]
+          },
+          proxy: true
+        }
+      ])
+    },
+    [
+      _vm._v(" "),
+      _c(
+        "div",
+        {
+          staticClass: "flex justify-end mt-6 mr-2 md:mr-10",
+          attrs: { id: "editing" }
+        },
+        [
+          _vm.create == false
+            ? _c("div", [
+                _vm.storeConfirmed || _vm.updateConfirmed
+                  ? _c(
+                      "span",
+                      {
+                        staticClass: "mr-6 xyz-out text-md",
+                        attrs: { xyz: "fade-100% out-delay-6 duration-6" }
+                      },
+                      [_vm._v("Saved.")]
+                    )
+                  : _vm._e(),
+                _vm._v(" "),
+                _c(
+                  "button",
+                  {
+                    staticClass: "btn",
+                    on: {
+                      click: function($event) {
+                        return _vm.createBrand()
+                      }
+                    }
+                  },
+                  [_vm._v("\n                Create New Brand\n            ")]
+                )
+              ])
+            : _c("div", [
+                _c(
+                  "button",
+                  {
+                    staticClass: "btn",
+                    on: {
+                      click: function($event) {
+                        _vm.create = false
+                      }
+                    }
+                  },
+                  [_vm._v("\n                Back\n            ")]
+                )
+              ])
+        ]
+      ),
+      _vm._v(" "),
+      _vm.create == true
+        ? _c(
+            "div",
+            {
+              staticClass:
+                "mx-auto w-full md:w-2/5 bg-white py-8 px-4 rounded-md mt-10 shadow-sm xyz-in",
+              attrs: { xyz: "fade-100% up" }
+            },
+            [
+              _c(
+                "form",
+                {
+                  staticClass: "flex flex-col",
                   on: {
-                    click: function($event) {
-                      return _vm.createBrand()
+                    submit: function($event) {
+                      $event.preventDefault()
+                      return _vm.storeBrand()
                     }
                   }
                 },
-                [_vm._v("\n                Create New Brand\n            ")]
-              )
-            ])
-          : _c("div", [
-              _c(
-                "button",
-                {
-                  staticClass: "btn",
-                  on: {
-                    click: function($event) {
-                      _vm.create = false
-                    }
-                  }
-                },
-                [_vm._v("\n                Back\n            ")]
-              )
-            ])
-      ]
-    ),
-    _vm._v(" "),
-    _vm.create == true
-      ? _c(
-          "div",
-          {
-            staticClass:
-              "mx-auto w-full md:w-3/5 bg-white py-8 flex justify-center rounded-md mt-10 shadow-sm xyz-in",
-            attrs: { xyz: "fade-100% up duration-10" }
-          },
-          [
-            _c(
-              "form",
-              {
-                staticClass: "flex flex-col",
-                on: {
-                  submit: function($event) {
-                    $event.preventDefault()
-                    return _vm.storeBrand()
-                  }
-                }
-              },
-              [
-                _c("div", { staticClass: "flex flex-col" }, [
-                  _c("label", { attrs: { for: "name" } }, [_vm._v("Name:")]),
-                  _vm._v(" "),
-                  _c("input", {
-                    directives: [
-                      {
-                        name: "model",
-                        rawName: "v-model",
-                        value: _vm.createBrandForm.name,
-                        expression: "createBrandForm.name"
-                      }
-                    ],
-                    staticClass: "input",
-                    attrs: { type: "text", id: "name" },
-                    domProps: { value: _vm.createBrandForm.name },
-                    on: {
-                      input: function($event) {
-                        if ($event.target.composing) {
-                          return
+                [
+                  _c("div", { staticClass: "flex flex-col" }, [
+                    _c("label", { attrs: { for: "name" } }, [_vm._v("Name:")]),
+                    _vm._v(" "),
+                    _c("input", {
+                      directives: [
+                        {
+                          name: "model",
+                          rawName: "v-model",
+                          value: _vm.createBrandForm.name,
+                          expression: "createBrandForm.name"
                         }
-                        _vm.$set(
-                          _vm.createBrandForm,
-                          "name",
-                          $event.target.value
-                        )
-                      }
-                    }
-                  }),
-                  _vm._v(" "),
-                  _c(
-                    "span",
-                    { staticClass: "text-xs text-red-700 uppercase mt-2" },
-                    [_vm._v(_vm._s(_vm.errors.name))]
-                  )
-                ]),
-                _vm._v(" "),
-                _c("div", { staticClass: "flex flex-col mt-4" }, [
-                  _c("label", { attrs: { for: "description" } }, [
-                    _vm._v("Description:")
-                  ]),
-                  _vm._v(" "),
-                  _c("input", {
-                    directives: [
-                      {
-                        name: "model",
-                        rawName: "v-model",
-                        value: _vm.createBrandForm.description,
-                        expression: "createBrandForm.description"
-                      }
-                    ],
-                    staticClass: "input",
-                    attrs: { type: "text", id: "description" },
-                    domProps: { value: _vm.createBrandForm.description },
-                    on: {
-                      input: function($event) {
-                        if ($event.target.composing) {
-                          return
+                      ],
+                      staticClass: "input max-w-sm",
+                      attrs: { type: "text", id: "name" },
+                      domProps: { value: _vm.createBrandForm.name },
+                      on: {
+                        input: function($event) {
+                          if ($event.target.composing) {
+                            return
+                          }
+                          _vm.$set(
+                            _vm.createBrandForm,
+                            "name",
+                            $event.target.value
+                          )
                         }
-                        _vm.$set(
-                          _vm.createBrandForm,
-                          "description",
-                          $event.target.value
-                        )
                       }
-                    }
-                  }),
-                  _vm._v(" "),
-                  _c(
-                    "span",
-                    { staticClass: "text-xs text-red-700 uppercase mt-2" },
-                    [_vm._v(_vm._s(_vm.errors.description))]
-                  )
-                ]),
-                _vm._v(" "),
-                _c("div", { staticClass: "flex justify-end" }, [
-                  _c(
-                    "button",
-                    { staticClass: "btn", attrs: { type: "submit" } },
-                    [_vm._v("Save")]
-                  )
-                ])
-              ]
-            )
-          ]
-        )
-      : _vm._e(),
-    _vm._v(" "),
-    _vm.editing != null && _vm.create == false
-      ? _c(
-          "div",
-          {
-            staticClass:
-              "mx-auto w-full md:w-3/5 bg-white py-8 flex justify-center rounded-md mt-10 shadow-sm xyz-in",
-            attrs: { xyz: "fade-100% up duration-10" }
-          },
-          [
-            _c(
-              "form",
-              {
-                staticClass: "flex flex-col",
-                on: {
-                  submit: function($event) {
-                    $event.preventDefault()
-                    return _vm.updateBrand(_vm.editBrandForm.name)
-                  }
-                }
-              },
-              [
-                _c("div", { staticClass: "flex flex-col" }, [
-                  _c("label", { attrs: { for: "name" } }, [_vm._v("Name:")]),
-                  _vm._v(" "),
-                  _c("input", {
-                    directives: [
-                      {
-                        name: "model",
-                        rawName: "v-model",
-                        value: _vm.editBrandForm.name,
-                        expression: "editBrandForm.name"
-                      }
-                    ],
-                    staticClass: "input",
-                    attrs: { type: "text", id: "name" },
-                    domProps: { value: _vm.editBrandForm.name },
-                    on: {
-                      input: function($event) {
-                        if ($event.target.composing) {
-                          return
-                        }
-                        _vm.$set(_vm.editBrandForm, "name", $event.target.value)
-                      }
-                    }
-                  }),
-                  _vm._v(" "),
-                  _c(
-                    "span",
-                    { staticClass: "text-xs text-red-700 uppercase mt-2" },
-                    [_vm._v(_vm._s(_vm.errors.name))]
-                  )
-                ]),
-                _vm._v(" "),
-                _c("div", { staticClass: "flex flex-col mt-4" }, [
-                  _c("label", { attrs: { for: "description" } }, [
-                    _vm._v("Description:")
-                  ]),
-                  _vm._v(" "),
-                  _c("input", {
-                    directives: [
-                      {
-                        name: "model",
-                        rawName: "v-model",
-                        value: _vm.editBrandForm.description,
-                        expression: "editBrandForm.description"
-                      }
-                    ],
-                    staticClass: "input",
-                    attrs: { type: "text", id: "description" },
-                    domProps: { value: _vm.editBrandForm.description },
-                    on: {
-                      input: function($event) {
-                        if ($event.target.composing) {
-                          return
-                        }
-                        _vm.$set(
-                          _vm.editBrandForm,
-                          "description",
-                          $event.target.value
-                        )
-                      }
-                    }
-                  }),
-                  _vm._v(" "),
-                  _c(
-                    "span",
-                    { staticClass: "text-xs text-red-700 uppercase mt-2" },
-                    [_vm._v(_vm._s(_vm.errors.description))]
-                  )
-                ]),
-                _vm._v(" "),
-                _c("div", { staticClass: "flex justify-end" }, [
-                  _c(
-                    "button",
-                    { staticClass: "btn", attrs: { type: "submit" } },
-                    [_vm._v("Save")]
-                  )
-                ])
-              ]
-            )
-          ]
-        )
-      : _vm._e(),
-    _vm._v(" "),
-    _vm.create == false
-      ? _c(
-          "div",
-          {
-            staticClass:
-              "mx-auto w-full p-2 md:w-4/5 bg-gray-200 py-8 flex justify-center rounded-md mt-10 shadow-inner"
-          },
-          [
-            _c("table", { staticClass: "table-auto w-full md:w-4/5" }, [
-              _c("thead", { staticClass: "bg-gray-100 shadow-sm mb-4" }, [
-                _c("tr", [
-                  _c("th", { staticClass: "text-center py-4 px-2" }, [
-                    _vm._v("\n                        ID\n                    ")
-                  ]),
-                  _vm._v(" "),
-                  _c("th", { staticClass: "text-left py-4 px-2" }, [
-                    _vm._v(
-                      "\n                        Name\n                    "
+                    }),
+                    _vm._v(" "),
+                    _c(
+                      "span",
+                      { staticClass: "text-xs text-red-700 uppercase mt-2" },
+                      [_vm._v(_vm._s(_vm.errors.name))]
                     )
                   ]),
                   _vm._v(" "),
-                  _c("th", { staticClass: "text-left py-4 px-2" }, [
-                    _vm._v(
-                      "\n                        Description\n                    "
+                  _c("div", { staticClass: "flex flex-col mt-4" }, [
+                    _c("label", { attrs: { for: "description" } }, [
+                      _vm._v("Description:")
+                    ]),
+                    _vm._v(" "),
+                    _c("textarea", {
+                      directives: [
+                        {
+                          name: "model",
+                          rawName: "v-model",
+                          value: _vm.createBrandForm.description,
+                          expression: "createBrandForm.description"
+                        }
+                      ],
+                      staticClass: "input",
+                      attrs: {
+                        type: "text",
+                        rows: "2",
+                        cols: "30",
+                        id: "description"
+                      },
+                      domProps: { value: _vm.createBrandForm.description },
+                      on: {
+                        input: function($event) {
+                          if ($event.target.composing) {
+                            return
+                          }
+                          _vm.$set(
+                            _vm.createBrandForm,
+                            "description",
+                            $event.target.value
+                          )
+                        }
+                      }
+                    }),
+                    _vm._v(" "),
+                    _c(
+                      "span",
+                      { staticClass: "text-xs text-red-700 uppercase mt-2" },
+                      [_vm._v(_vm._s(_vm.errors.description))]
                     )
                   ]),
                   _vm._v(" "),
-                  _c("th", { staticClass: "text-center py-4 px-2 action" }, [
-                    _vm._v(
-                      "\n                        Action\n                    "
+                  _c("div", { staticClass: "flex justify-end" }, [
+                    _c(
+                      "button",
+                      { staticClass: "btn", attrs: { type: "submit" } },
+                      [_vm._v("Save")]
                     )
                   ])
-                ])
-              ]),
-              _vm._v(" "),
+                ]
+              )
+            ]
+          )
+        : _vm._e(),
+      _vm._v(" "),
+      _vm.editing != null && _vm.create == false
+        ? _c(
+            "div",
+            {
+              staticClass:
+                "mx-auto w-full md:w-2/5 bg-white py-8 px-4 rounded-md mt-10 shadow-sm xyz-in",
+              attrs: { xyz: "fade-100% up" }
+            },
+            [
               _c(
-                "tbody",
-                _vm._l(_vm.brands, function(brand) {
-                  return _c(
-                    "tr",
-                    { key: brand.id, attrs: { id: brand.name } },
-                    [
-                      _c("td", { staticClass: "text-center py-4 px-2" }, [
+                "form",
+                {
+                  staticClass: "flex flex-col",
+                  on: {
+                    submit: function($event) {
+                      $event.preventDefault()
+                      return _vm.updateBrand(_vm.editBrandForm.name)
+                    }
+                  }
+                },
+                [
+                  _c("div", { staticClass: "flex flex-col" }, [
+                    _c("label", { attrs: { for: "name" } }, [_vm._v("Name:")]),
+                    _vm._v(" "),
+                    _c("input", {
+                      directives: [
+                        {
+                          name: "model",
+                          rawName: "v-model",
+                          value: _vm.editBrandForm.name,
+                          expression: "editBrandForm.name"
+                        }
+                      ],
+                      staticClass: "input max-w-sm",
+                      attrs: { type: "text", id: "name" },
+                      domProps: { value: _vm.editBrandForm.name },
+                      on: {
+                        input: function($event) {
+                          if ($event.target.composing) {
+                            return
+                          }
+                          _vm.$set(
+                            _vm.editBrandForm,
+                            "name",
+                            $event.target.value
+                          )
+                        }
+                      }
+                    }),
+                    _vm._v(" "),
+                    _c(
+                      "span",
+                      { staticClass: "text-xs text-red-700 uppercase mt-2" },
+                      [_vm._v(_vm._s(_vm.errors.name))]
+                    )
+                  ]),
+                  _vm._v(" "),
+                  _c("div", { staticClass: "flex flex-col mt-4" }, [
+                    _c("label", { attrs: { for: "description" } }, [
+                      _vm._v("Description:")
+                    ]),
+                    _vm._v(" "),
+                    _c("textarea", {
+                      directives: [
+                        {
+                          name: "model",
+                          rawName: "v-model",
+                          value: _vm.editBrandForm.description,
+                          expression: "editBrandForm.description"
+                        }
+                      ],
+                      staticClass: "input",
+                      attrs: {
+                        type: "text",
+                        rows: "2",
+                        cols: "30",
+                        id: "description"
+                      },
+                      domProps: { value: _vm.editBrandForm.description },
+                      on: {
+                        input: function($event) {
+                          if ($event.target.composing) {
+                            return
+                          }
+                          _vm.$set(
+                            _vm.editBrandForm,
+                            "description",
+                            $event.target.value
+                          )
+                        }
+                      }
+                    }),
+                    _vm._v(" "),
+                    _c(
+                      "span",
+                      { staticClass: "text-xs text-red-700 uppercase mt-2" },
+                      [_vm._v(_vm._s(_vm.errors.description))]
+                    )
+                  ]),
+                  _vm._v(" "),
+                  _c("div", { staticClass: "flex w-full justify-between" }, [
+                    _c(
+                      "button",
+                      {
+                        staticClass: "btn-danger",
+                        attrs: { type: "button" },
+                        on: {
+                          click: function($event) {
+                            return _vm.deleteBrand(_vm.editBrandForm.id)
+                          }
+                        }
+                      },
+                      [_vm._v("Delete")]
+                    ),
+                    _vm._v(" "),
+                    _c(
+                      "button",
+                      { staticClass: "btn", attrs: { type: "submit" } },
+                      [_vm._v("Save")]
+                    )
+                  ])
+                ]
+              )
+            ]
+          )
+        : _vm._e(),
+      _vm._v(" "),
+      _vm.create == false
+        ? _c(
+            "div",
+            {
+              staticClass:
+                "mx-auto w-full p-2 md:w-4/5 bg-gray-200 py-8 flex justify-center rounded-md mt-10 shadow-inner"
+            },
+            [
+              _c(
+                "table",
+                {
+                  staticClass:
+                    "table-auto w-full mx-auto md:w-4/5 overflow-x-auto xyz-in",
+                  attrs: { xyz: "fade-100% duration-10" }
+                },
+                [
+                  _c("thead", { staticClass: "bg-gray-100 shadow-sm mb-4" }, [
+                    _c("tr", [
+                      _c("th", { staticClass: "text-center py-4 px-2" }, [
                         _vm._v(
-                          "\n                        " +
-                            _vm._s(brand.id) +
-                            "\n                    "
+                          "\n                        ID\n                    "
                         )
                       ]),
                       _vm._v(" "),
-                      _c("td", { staticClass: "text-left py-4 px-2" }, [
-                        _vm.editing != brand.id
-                          ? _c("span", [_vm._v(_vm._s(brand.name))])
-                          : _c("span", [_vm._v("Editing")])
+                      _c("th", { staticClass: "text-left py-4 px-2" }, [
+                        _vm._v(
+                          "\n                        Name\n                    "
+                        )
                       ]),
                       _vm._v(" "),
-                      _c("td", { staticClass: "text-left py-4 px-2" }, [
-                        _vm.editing != brand.id
-                          ? _c("span", [_vm._v(_vm._s(brand.description))])
-                          : _c("span", [_vm._v("Editing")])
+                      _c("th", { staticClass: "text-left py-4 px-2" }, [
+                        _vm._v(
+                          "\n                        Description\n                    "
+                        )
                       ]),
                       _vm._v(" "),
-                      _c("td", { staticClass: "text-center action" }, [
-                        _vm.editing != brand.id
-                          ? _c(
-                              "div",
-                              {
-                                staticClass: "flex justify-center items-center"
-                              },
-                              [
-                                _c(
-                                  "button",
+                      _c(
+                        "th",
+                        { staticClass: "text-center py-4 px-2 action" },
+                        [
+                          _vm._v(
+                            "\n                        Action\n                    "
+                          )
+                        ]
+                      )
+                    ])
+                  ]),
+                  _vm._v(" "),
+                  _c(
+                    "tbody",
+                    _vm._l(_vm.brands, function(brand) {
+                      return _c(
+                        "tr",
+                        { key: brand.id, attrs: { id: brand.name } },
+                        [
+                          _c("td", { staticClass: "text-center py-4 px-2" }, [
+                            _vm._v(
+                              "\n                        " +
+                                _vm._s(brand.id) +
+                                "\n                    "
+                            )
+                          ]),
+                          _vm._v(" "),
+                          _c("td", { staticClass: "text-left py-4 px-2" }, [
+                            _vm.editing != brand.id
+                              ? _c("span", [_vm._v(_vm._s(brand.name))])
+                              : _c("span", [_vm._v("Editing")])
+                          ]),
+                          _vm._v(" "),
+                          _c(
+                            "td",
+                            { staticClass: "text-left py-4 px-2 description" },
+                            [
+                              _vm.editing != brand.id
+                                ? _c("span", [
+                                    _vm._v(_vm._s(brand.description))
+                                  ])
+                                : _c("span", [_vm._v("Editing")])
+                            ]
+                          ),
+                          _vm._v(" "),
+                          _c("td", { staticClass: "text-center action" }, [
+                            _vm.editing != brand.id
+                              ? _c(
+                                  "div",
                                   {
                                     staticClass:
-                                      "bg-gray-800 uppercase font-semibold text-gray-100 text-xs rounded-md py-2 px-4",
-                                    on: {
-                                      click: function($event) {
-                                        return _vm.editBrand(brand)
-                                      }
-                                    }
+                                      "flex justify-center items-center"
                                   },
-                                  [_vm._v("Edit")]
+                                  [
+                                    _c(
+                                      "button",
+                                      {
+                                        staticClass:
+                                          "bg-gray-800 uppercase font-semibold text-gray-100 text-xs rounded-md py-2 px-4",
+                                        on: {
+                                          click: function($event) {
+                                            return _vm.editBrand(brand)
+                                          }
+                                        }
+                                      },
+                                      [_vm._v("Edit")]
+                                    )
+                                  ]
                                 )
-                              ]
-                            )
-                          : _c("div", [
-                              _c(
-                                "button",
-                                {
-                                  staticClass:
-                                    "bg-gray-800 uppercase font-semibold text-gray-100 text-xs rounded-md py-2 px-4",
-                                  on: {
-                                    click: function($event) {
-                                      return _vm.resetEditForm()
-                                    }
-                                  }
-                                },
-                                [_vm._v("Cancle")]
-                              )
-                            ])
-                      ])
-                    ]
+                              : _c("div", [
+                                  _c(
+                                    "button",
+                                    {
+                                      staticClass:
+                                        "bg-gray-800 uppercase font-semibold text-gray-100 text-xs rounded-md py-2 px-4",
+                                      on: {
+                                        click: function($event) {
+                                          return _vm.resetEditForm()
+                                        }
+                                      }
+                                    },
+                                    [_vm._v("Cancle")]
+                                  )
+                                ])
+                          ])
+                        ]
+                      )
+                    }),
+                    0
                   )
-                }),
-                0
+                ]
               )
-            ])
-          ]
-        )
-      : _vm._e()
-  ])
+            ]
+          )
+        : _vm._e()
+    ]
+  )
 }
 var staticRenderFns = []
 render._withStripped = true
@@ -33230,94 +33454,299 @@ var render = function() {
   var _vm = this
   var _h = _vm.$createElement
   var _c = _vm._self._c || _h
-  return _c("app-layout", [
-    _c("div", { staticClass: "flex justify-end mr-10 mt-4" }, [
-      _vm.create == false
-        ? _c(
-            "button",
-            {
-              staticClass: "btn",
-              on: {
-                click: function($event) {
-                  return _vm.createProduct()
+  return _c(
+    "app-layout",
+    {
+      scopedSlots: _vm._u([
+        {
+          key: "header",
+          fn: function() {
+            return [
+              _c(
+                "h2",
+                {
+                  staticClass:
+                    "font-semibold text-xl text-gray-800 leading-tight"
+                },
+                [_vm._v("\n            Manage Products\n        ")]
+              )
+            ]
+          },
+          proxy: true
+        }
+      ])
+    },
+    [
+      _vm._v(" "),
+      _c("div", { staticClass: "flex justify-end mr-10 mt-4" }, [
+        _vm.create || _vm.productForm.id != null
+          ? _c(
+              "button",
+              {
+                staticClass: "btn",
+                on: {
+                  click: function($event) {
+                    ;(_vm.create = false), _vm.resetForm()
+                  }
                 }
-              }
-            },
-            [_vm._v("\n            Create New Product\n        ")]
-          )
-        : _c(
-            "button",
-            {
-              staticClass: "btn",
-              on: {
-                click: function($event) {
-                  _vm.create = false
-                }
-              }
-            },
-            [_vm._v("Back")]
-          )
-    ]),
-    _vm._v(" "),
-    _c(
-      "div",
-      { staticClass: "flex justify-center mt-10" },
-      [
-        _vm.create == false
-          ? _c("table", [
-              _c("thead", [
-                _c("tr", [
-                  _c("th", [
-                    _vm._v("\n                        Id\n                    ")
-                  ]),
-                  _vm._v(" "),
-                  _c("th", [
-                    _vm._v(
-                      "\n                        Product\n                    "
-                    )
-                  ]),
-                  _vm._v(" "),
-                  _c("th", [
-                    _vm._v(
-                      "\n                        Quantity\n                    "
-                    )
-                  ])
-                ])
-              ]),
-              _vm._v(" "),
-              _c("tbody", [
-                _c("tr", [
-                  _c("td", [
-                    _vm._v("\n                        22\n                    ")
-                  ]),
-                  _vm._v(" "),
-                  _c("td", [
-                    _vm._v(
-                      "\n                        Apple\n                    "
-                    )
-                  ]),
-                  _vm._v(" "),
-                  _c("td", [
-                    _vm._v("\n                        23\n                    ")
-                  ])
-                ])
-              ])
-            ])
+              },
+              [_vm._v("Back")]
+            )
           : _vm._e(),
         _vm._v(" "),
-        _vm.create == true
-          ? _c("product-form", {
-              attrs: {
-                brands: _vm.brands,
-                products: _vm.products,
-                errors: _vm.errors
-              }
-            })
+        _vm.create == false
+          ? _c(
+              "button",
+              {
+                staticClass: "btn",
+                on: {
+                  click: function($event) {
+                    return _vm.createProduct()
+                  }
+                }
+              },
+              [_vm._v("\n            Create New Product\n        ")]
+            )
           : _vm._e()
-      ],
-      1
-    )
-  ])
+      ]),
+      _vm._v(" "),
+      _c(
+        "div",
+        { staticClass: "flex justify-center mt-10" },
+        [
+          _vm.create == true || _vm.productForm.id != null
+            ? _c("product-form", {
+                attrs: {
+                  brands: _vm.brands,
+                  products: _vm.products,
+                  form: _vm.productForm,
+                  errors: _vm.errors
+                }
+              })
+            : _vm._e()
+        ],
+        1
+      ),
+      _vm._v(" "),
+      _c(
+        "div",
+        {
+          staticClass:
+            "mx-auto my-4 w-full p-2 md:w-4/5 bg-gray-200 py-8 px-4 overflow-x-auto rounded-md mt-10 shadow-inner"
+        },
+        [
+          _c("table", { staticClass: "table-auto w-full mx-auto md:w-4/5" }, [
+            _c("thead", { staticClass: "bg-gray-100 shadow-sm mb-4" }, [
+              _c("tr", [
+                _c("th", { staticClass: "text-center py-4 px-2" }, [
+                  _vm._v("\n                        ID\n                    ")
+                ]),
+                _vm._v(" "),
+                _c("th", { staticClass: "text-left py-4 px-2" }, [
+                  _vm._v("\n                        Name\n                    ")
+                ]),
+                _vm._v(" "),
+                _c("th", { staticClass: "text-left py-4 px-2" }, [
+                  _vm._v("\n                        SKU\n                    ")
+                ]),
+                _vm._v(" "),
+                _c("th", { staticClass: "text-left py-4 px-2" }, [
+                  _vm._v(
+                    "\n                        Brand\n                    "
+                  )
+                ]),
+                _vm._v(" "),
+                _c("th", { staticClass: "text-left py-4 px-2" }, [
+                  _vm._v(
+                    "\n                        Color\n                    "
+                  )
+                ]),
+                _vm._v(" "),
+                _c("th", { staticClass: "text-left py-4 px-2" }, [
+                  _vm._v(
+                    "\n                        Quantity\n                    "
+                  )
+                ]),
+                _vm._v(" "),
+                _c("th", { staticClass: "text-left py-4 px-2" }, [
+                  _vm._v(
+                    "\n                        Weight\n                    "
+                  )
+                ]),
+                _vm._v(" "),
+                _c("th", { staticClass: "text-left py-4 px-2" }, [
+                  _vm._v(
+                    "\n                        Price\n                    "
+                  )
+                ]),
+                _vm._v(" "),
+                _c("th", { staticClass: "text-left py-4 px-2" }, [
+                  _vm._v("\n                        Sale\n                    ")
+                ]),
+                _vm._v(" "),
+                _c("th", { staticClass: "text-left py-4 px-2" }, [
+                  _vm._v(
+                    "\n                        Descritpion\n                    "
+                  )
+                ]),
+                _vm._v(" "),
+                _c("th", { staticClass: "text-left py-4 px-2" }, [
+                  _vm._v(
+                    "\n                        Status\n                    "
+                  )
+                ]),
+                _vm._v(" "),
+                _c("th", { staticClass: "text-left py-4 px-2" }, [
+                  _vm._v(
+                    "\n                        Featured\n                    "
+                  )
+                ]),
+                _vm._v(" "),
+                _c("th", { staticClass: "text-center py-4 px-2 action" }, [
+                  _vm._v(
+                    "\n                        Action\n                    "
+                  )
+                ])
+              ])
+            ]),
+            _vm._v(" "),
+            _c(
+              "tbody",
+              _vm._l(_vm.products, function(product) {
+                return _c(
+                  "tr",
+                  { key: product.id, attrs: { id: product.name } },
+                  [
+                    _c("td", { staticClass: "text-center py-4 px-2" }, [
+                      _vm._v(
+                        "\n                        " +
+                          _vm._s(product.id) +
+                          "\n                    "
+                      )
+                    ]),
+                    _vm._v(" "),
+                    _c("td", { staticClass: "text-left py-4 px-2" }, [
+                      _vm.productForm.id != product.id
+                        ? _c("span", [_vm._v(_vm._s(product.name))])
+                        : _c("span", [_vm._v("...")])
+                    ]),
+                    _vm._v(" "),
+                    _c("td", { staticClass: "text-left py-4 px-2" }, [
+                      _vm.productForm.id != product.id
+                        ? _c("span", [_vm._v(_vm._s(product.sku))])
+                        : _c("span", [_vm._v("...")])
+                    ]),
+                    _vm._v(" "),
+                    _c("td", { staticClass: "text-left py-4 px-2" }, [
+                      _vm.productForm.id != product.id
+                        ? _c(
+                            "span",
+                            _vm._l(_vm.brands, function(brand) {
+                              return _c("span", { key: brand.id }, [
+                                brand.id == product.brand_id
+                                  ? _c("span", [_vm._v(_vm._s(brand.name))])
+                                  : _vm._e()
+                              ])
+                            }),
+                            0
+                          )
+                        : _c("span", [_vm._v("...")])
+                    ]),
+                    _vm._v(" "),
+                    _c("td", { staticClass: "text-left py-4 px-2" }, [
+                      _vm.productForm.id != product.id
+                        ? _c("span", [_vm._v(_vm._s(product.color))])
+                        : _c("span", [_vm._v("...")])
+                    ]),
+                    _vm._v(" "),
+                    _c("td", { staticClass: "text-left py-4 px-2" }, [
+                      _vm.productForm.id != product.id
+                        ? _c("span", [_vm._v(_vm._s(product.quantity))])
+                        : _c("span", [_vm._v("...")])
+                    ]),
+                    _vm._v(" "),
+                    _c("td", { staticClass: "text-left py-4 px-2" }, [
+                      _vm.productForm.id != product.id
+                        ? _c("span", [_vm._v(_vm._s(product.weight))])
+                        : _c("span", [_vm._v("...")])
+                    ]),
+                    _vm._v(" "),
+                    _c("td", { staticClass: "text-left py-4 px-2" }, [
+                      _vm.productForm.id != product.id
+                        ? _c("span", [_vm._v(_vm._s(product.price))])
+                        : _c("span", [_vm._v("...")])
+                    ]),
+                    _vm._v(" "),
+                    _c("td", { staticClass: "text-left py-4 px-2" }, [
+                      _vm.productForm.id != product.id
+                        ? _c("span", [_vm._v(_vm._s(product.sale_price))])
+                        : _c("span", [_vm._v("...")])
+                    ]),
+                    _vm._v(" "),
+                    _c(
+                      "td",
+                      { staticClass: "text-left py-4 px-2 description" },
+                      [
+                        _vm.productForm.id != product.id
+                          ? _c("span", [_vm._v(_vm._s(product.description))])
+                          : _c("span", [_vm._v("...")])
+                      ]
+                    ),
+                    _vm._v(" "),
+                    _c("td", { staticClass: "text-left py-4 px-2" }, [
+                      _vm.productForm.id != product.id
+                        ? _c("span", [_vm._v(_vm._s(product.status))])
+                        : _c("span", [_vm._v("...")])
+                    ]),
+                    _vm._v(" "),
+                    _c("td", { staticClass: "text-left py-4 px-2" }, [
+                      _vm.productForm.id != product.id
+                        ? _c("span", [_vm._v(_vm._s(product.featured))])
+                        : _c("span", [_vm._v("...")])
+                    ]),
+                    _vm._v(" "),
+                    _c("td", { staticClass: "text-center action" }, [
+                      _vm.productForm.id != product.id
+                        ? _c(
+                            "div",
+                            { staticClass: "flex justify-center items-center" },
+                            [
+                              _c(
+                                "button",
+                                {
+                                  staticClass:
+                                    "bg-gray-800 uppercase font-semibold text-gray-100 text-xs rounded-md py-2 px-4",
+                                  on: {
+                                    click: function($event) {
+                                      return _vm.editForm(product)
+                                    }
+                                  }
+                                },
+                                [_vm._v("Edit")]
+                              )
+                            ]
+                          )
+                        : _c("div", [
+                            _c(
+                              "span",
+                              {
+                                staticClass:
+                                  "uppercase font-semibold text-gray-500 text-xs py-2 px-4"
+                              },
+                              [_vm._v("Editing")]
+                            )
+                          ])
+                    ])
+                  ]
+                )
+              }),
+              0
+            )
+          ])
+        ]
+      )
+    ]
+  )
 }
 var staticRenderFns = []
 render._withStripped = true

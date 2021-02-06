@@ -1,10 +1,10 @@
 <template>
     <div class="bg-white p-6 my-4 rounded-md shadow-md">
-        <h1 class="text-gray-500 text-md py-4">New Product</h1>
-        <form @submit.prevent="storeProduct()" class="flex flex-col lg:grid lg:grid-cols-2">
+        <h1 class="text-gray-500 text-md py-4">{{ productForm.name ? productForm.name :'New Product' }}</h1>
+        <form @submit.prevent="storeProduct()" class="flex flex-col lg:grid lg:grid-cols-2 xyz-in" xyz="fade-100% duration-10">
             <div class="flex flex-col">
                 <label for="name">Name:</label>
-                <input type="text" id="name" v-model="createProductForm.name"
+                <input type="text" id="name" v-model="productForm.name"
                 class="input" />
                 <span class="text-xs text-red-700 uppercase mt-2">{{ errors.name }}</span>
 
@@ -12,14 +12,14 @@
 
             <div class="flex flex-col lg:ml-4">
                 <label for="sku">SKU:</label>
-                <input type="text" id="sku" v-model="createProductForm.sku"
+                <input type="text" id="sku" v-model="productForm.sku"
                 class="input" />
                 <span class="text-xs text-red-700 uppercase mt-2">{{ errors.sku }}</span>
             </div>
 
             <div class="flex flex-col">
                 <label for="brand_id">Brand:</label>
-                <select id="brand_id" v-model="createProductForm.brand_id"
+                <select id="brand_id" v-model="productForm.brand_id"
                 class="input">
                     <option :key="brand.id" v-for="brand in brands" :value="brand.id">{{brand.name}}</option>
                 </select>
@@ -28,136 +28,88 @@
 
             <div class="flex flex-col lg:ml-4">
                 <label for="color">Color:</label>
-                <input type="text" id="color" v-model="createProductForm.color"
+                <input type="text" id="color" v-model="productForm.color"
                 class="input" />
             </div>
 
             <div class="flex flex-col">
                 <label for="quantity">Quantity:</label>
-                <input type="number" id="quantity" v-model="createProductForm.quantity"
+                <input type="number" id="quantity" v-model="productForm.quantity"
                 class="input" />
                 <span class="text-xs text-red-700 uppercase mt-2">{{ errors.quantity }}</span>
             </div>
 
             <div class="flex flex-col lg:ml-4">
                 <label for="weight">Weight:</label>
-                <input type="number" id="weight" v-model="createProductForm.weight"
+                <input type="number" id="weight" v-model="productForm.weight"
                 class="input" />
             </div>
 
             <div class="flex flex-col">
                 <label for="price">Price:</label>
-                <input type="number" id="price" v-model="createProductForm.price"
+                <input type="number" id="price" v-model="productForm.price"
                 class="input" />
                 <span class="text-xs text-red-700 uppercase mt-2">{{ errors.price }}</span>
             </div>
 
             <div class="flex flex-col lg:ml-4">
                 <label for="sale_price">Sale:</label>
-                <input type="number" id="sale_price" v-model="createProductForm.sale_price"
+                <input type="number" id="sale_price" v-model="productForm.sale_price"
                 class="input" />
             </div>
 
             <div class="flex flex-col lg:grid lg:col-span-2">
                 <label for="description">Description:</label>
-                <textarea type="text" rows="2" cols="30" id="description" v-model="createProductForm.description"
-                class="input" />
-            </div>
-
-            <div class="flex flex-col lg:ml-4">
-                <label for="status">Status:</label>
-                <input type="checkbox" id="status" v-model="createProductForm.status"
+                <textarea type="text" rows="2" cols="30" id="description" v-model="productForm.description"
                 class="input" />
             </div>
 
             <div class="flex flex-col">
-                <label for="featured">Featured:</label>
-                <input type="checkbox" id="featured" v-model="createProductForm.featured"
+                <label for="status">Status:</label>
+                <input type="checkbox" id="status" v-model="productForm.status"
                 class="input" />
             </div>
-            <div class="flex justify-end lg:grid lg:col-span-2">
-                <div>
-                    <span v-if="storeConfirmed" class="mr-8 xyz-out" xyz="fade-100% out-delay-6 duration-6">Saved.</span>
+
+            <div class="flex flex-col lg:ml-4">
+                <label for="featured">Featured:</label>
+                <input type="checkbox" id="featured" v-model="productForm.featured"
+                class="input" />
+            </div>
+            <div class="flex lg:grid lg:col-span-2">
+                <div v-if="productForm.id != null" class="flex w-full justify-between lg:col-span-2">
+                    <div>
+                        <button @click="deleteProduct(productForm.id)" type="button" class="btn-danger">Delete</button>
+                    </div>
+                    <div>
+                        <button @click="updateProduct()" type="button" class="btn">Update</button>
+                    </div>
+                </div>
+                <div v-else class="flex w-full justify-end lg:col-span-2">
                     <button type="submit" class="btn">Save</button>
                 </div>
             </div>
         </form>
-        <!-- <div v-if="create == false"
-            class="mx-auto w-full p-2 md:w-4/5 bg-gray-200 py-8 flex justify-center rounded-md mt-10 shadow-inner">
-            <table class="table-auto w-full md:w-4/5">
-                <thead class="bg-gray-100 shadow-sm mb-4">
-                    <tr>
-                        <th class="text-center py-4 px-2">
-                            ID
-                        </th>
-                        <th class="text-left py-4 px-2">
-                            Name
-                        </th>
-                        <th class="text-left py-4 px-2">
-                            Description
-                        </th>
-                        <th class="text-center py-4 px-2 action">
-                            Action
-                        </th>
-                    </tr>
-                </thead>
-                <tbody>
-                    <tr :key="product.id" v-for="product in products" :id="product.name">
-                        <td class="text-center py-4 px-2">
-                            {{product.id}}
-                        </td>
-                        <td class="text-left py-4 px-2">
-                            <span v-if="editing != product.id">{{product.name}}</span>
-                            <span v-else>Editing</span>
-                        </td>
-                        <td class="text-left py-4 px-2">
-                            <span v-if="editing != product.id">{{product.description}}</span>
-                            <span v-else>Editing</span>
-                        </td>
-                        <td class="text-center action">
-                            <div v-if="editing != product.id" class="flex justify-center items-center">
-                                <button @click="editProduct(product)" class="bg-gray-800 uppercase font-semibold text-gray-100 text-xs rounded-md py-2 px-4">Edit</button>
-                            </div>
-                            <div v-else>
-                                <button @click="resetEditForm()" class="bg-gray-800 uppercase font-semibold text-gray-100 text-xs rounded-md py-2 px-4">Cancle</button>
-                            </div>
-                        </td>
-                    </tr>
-                </tbody>
-            </table>
-        </div> -->
     </div>
 </template>
 
 <script>
 
     export default {
-        props: [
-            'brands',
-            'products',
-            'errors'
-        ],
+        props: {
+            brands: Array,
+            products: Array,
+            errors: Object,
+
+            form: Object
+        },
 
         data() {
 
             return {
                 storeConfirmed: false,
+                updateConfirmed: false,
 
-                createProductForm: {
-                    name: null,
-                    slug: null,
-                    sku: null,
-                    brand_id: null,
-                    color: null,
-                    quantity: null,
-                    weight: null,
-                    price: null,
-                    sale_price: null,
-                    description: null,
-                    status: 0,
-                    featured: 0,
-
-                },
+                productForm: this.form,
 
             }
         },
@@ -165,13 +117,12 @@
         methods: {
 
             storeProduct() {
-                if (this.createProductForm.name != null) {
+
+                if (this.productForm.name != null) {
                     this.slug();
                 }
-                this.$inertia.post(route('store-product'), this.createProductForm, {
+                this.$inertia.post(route('store-product'), this.productForm, {
                     onSuccess: () => {
-                        this.storeConfirmed = true;
-                        setTimeout(() => this.storeConfirmed = false, 2000);
                         this.resetForm();
                     },
                     onError: () => {
@@ -179,15 +130,44 @@
                     }
                 });
             },
-            slug() {
-                this.createProductForm.slug = this.createProductForm.name.toLowerCase().replace(/\s/g, '-');
+
+            updateProduct() {
+
+                if (this.productForm.name != null) {
+                    this.slug();
+                }
+                this.$inertia.post(route('update-product'), this.productForm, {
+                    onSuccess: () => {
+                        this.resetForm();
+                    },
+                    onError: () => {
+                        console.log(this.errors);
+                    }
+                });
             },
+
+            deleteProduct(id) {
+
+                this.$inertia.post(route('delete-product'), { id: id }, {
+                    onSuccess: () => {
+                        this.resetForm();
+                    },
+                    onError: () => {
+                        console.log(this.errors);
+                    }
+                });
+            },
+
+            slug() {
+                this.productForm.slug = this.productForm.name.toLowerCase().replace(/\s/g, '-');
+            },
+
             resetForm() {
-                Object.keys(this.createProductForm).forEach( key => {
+                Object.keys(this.productForm).forEach( key => {
                     if (key == 'status' || key == 'featured') {
-                        this.createProductForm[key] = 0
+                        this.productForm[key] = 0
                     } else {
-                        this.createProductForm[key] = null
+                        this.productForm[key] = null
                     }
                 });
             },
@@ -199,5 +179,8 @@
 <style scoped>
     form div {
         margin-top: 1rem;
+    }
+    form div label {
+        margin-bottom: 0.25rem;
     }
 </style>

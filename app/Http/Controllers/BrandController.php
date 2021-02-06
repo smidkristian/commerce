@@ -89,7 +89,7 @@ class BrandController extends Controller
 
         $target = Brand::find($request->id);
 
-        $target->update($request->except('token'));
+        $target->update($request->all());
 
         return Redirect::route('admin/brands');
     }

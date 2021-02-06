@@ -37,6 +37,8 @@ Route::middleware(['auth:sanctum', 'verified'])->get('/admin/dashboard', functio
 Route::middleware(['auth:sanctum', 'verified'])->get('admin/products', [ProductController::class, 'index'])->name('admin/products');
 
 Route::post('admin/store-product', [ProductController::class, 'store'])->name('store-product');
+Route::post('admin/update-product', [ProductController::class, 'update'])->name('update-product');
+Route::post('admin/delete-product', [ProductController::class, 'destroy'])->name('delete-product');
 
 // BRANDS
 
