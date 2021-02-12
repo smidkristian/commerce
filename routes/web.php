@@ -2,6 +2,7 @@
 
 use App\Http\Controllers\ProductController;
 use App\Http\Controllers\BrandController;
+use App\Http\Controllers\ProductImageController;
 
 use Illuminate\Foundation\Application;
 use Illuminate\Support\Facades\Route;
@@ -20,13 +21,11 @@ use Inertia\Inertia;
 */
 
 Route::get('/', function () {
-    return Inertia::render('Welcome', [
+    return Inertia::render('Home', [
         'canLogin' => Route::has('login'),
-        'canRegister' => Route::has('register'),
-        'laravelVersion' => Application::VERSION,
-        'phpVersion' => PHP_VERSION,
+        'canRegister' => Route::has('register')
     ]);
-});
+})->name('home');
 
 Route::middleware(['auth:sanctum', 'verified'])->get('/admin/dashboard', function () {
     return Inertia::render('Admin/Dashboard');
@@ -36,14 +35,19 @@ Route::middleware(['auth:sanctum', 'verified'])->get('/admin/dashboard', functio
 
 Route::middleware(['auth:sanctum', 'verified'])->get('admin/products', [ProductController::class, 'index'])->name('admin/products');
 
-Route::post('admin/store-product', [ProductController::class, 'store'])->name('store-product');
-Route::post('admin/update-product', [ProductController::class, 'update'])->name('update-product');
-Route::post('admin/delete-product', [ProductController::class, 'destroy'])->name('delete-product');
+Route::middleware(['auth:sanctum', 'verified'])->post('admin/store-product', [ProductController::class, 'store'])->name('store-product');
+Route::middleware(['auth:sanctum', 'verified'])->post('admin/update-product', [ProductController::class, 'update'])->name('update-product');
+Route::middleware(['auth:sanctum', 'verified'])->post('admin/delete-product', [ProductController::class, 'destroy'])->name('delete-product');
+
+// PRODUCT IMAGES
+
+Route::middleware(['auth:sanctum', 'verified'])->post('admin/store-image', [ProductImageController::class, 'store'])->name('store-image');
+Route::middleware(['auth:sanctum', 'verified'])->post('admin/load-images', [ProductImageController::class, 'load'])->name('load-images');
 
 // BRANDS
 
 Route::middleware(['auth:sanctum', 'verified'])->get('admin/brands', [BrandController::class, 'index'])->name('admin/brands');
 
-Route::post('admin/store-brand', [BrandController::class, 'store'])->name('store-brand');
-Route::post('admin/update-brand', [BrandController::class, 'update'])->name('update-brand');
-Route::post('admin/delete-brand', [BrandController::class, 'destroy'])->name('delete-brand');
+Route::middleware(['auth:sanctum', 'verified'])->post('admin/store-brand', [BrandController::class, 'store'])->name('store-brand');
+Route::middleware(['auth:sanctum', 'verified'])->post('admin/update-brand', [BrandController::class, 'update'])->name('update-brand');
+Route::middleware(['auth:sanctum', 'verified'])->post('admin/delete-brand', [BrandController::class, 'destroy'])->name('delete-brand');

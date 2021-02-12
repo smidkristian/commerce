@@ -1,5 +1,5 @@
 <template>
-    <div class="bg-white p-6 my-4 rounded-md shadow-md">
+    <div class="bg-white p-6 my-2 rounded-md shadow-md">
         <h1 class="text-gray-500 text-md py-4">{{ productForm.name ? productForm.name :'New Product' }}</h1>
         <form @submit.prevent="storeProduct()" class="flex flex-col lg:grid lg:grid-cols-2 xyz-in" xyz="fade-100% duration-10">
             <div class="flex flex-col">
@@ -100,15 +100,7 @@
             products: Array,
             errors: Object,
 
-            form: Object
-        },
-
-        data() {
-
-            return {
-                productForm: this.form,
-
-            }
+            productForm: Object
         },
 
         methods: {
@@ -159,7 +151,8 @@
             },
 
             slug() {
-                this.productForm.slug = this.productForm.name.toLowerCase().replace(/\s/g, '-');
+                let diacritics = this.productForm.name.normalize("NFD").replace(/[\u0300-\u036f]/g, "");
+                this.productForm.slug = diacritics.toLowerCase().replace(/\s/g, '-');
             },
 
             resetForm() {

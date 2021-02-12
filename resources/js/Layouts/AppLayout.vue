@@ -24,9 +24,15 @@
                                 <jet-nav-link :href="route('admin/products')" :active="route().current('admin/products')">
                                     Products
                                 </jet-nav-link>
-                            </div><div class="hidden space-x-8 sm:-my-px sm:ml-10 sm:flex">
+                            </div>
+                            <div class="hidden space-x-8 sm:-my-px sm:ml-10 sm:flex">
                                 <jet-nav-link :href="route('admin/brands')" :active="route().current('admin/brands')">
                                     Brands
+                                </jet-nav-link>
+                            </div>
+                            <div class="hidden space-x-8 sm:-my-px sm:ml-10 sm:flex">
+                                <jet-nav-link :href="route('home')">
+                                    Website
                                 </jet-nav-link>
                             </div>
                         </div>

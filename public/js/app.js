@@ -29307,7 +29307,7 @@ var render = function() {
   var _vm = this
   var _h = _vm.$createElement
   var _c = _vm._self._c || _h
-  return _c("div", { staticClass: "bg-white p-6 my-4 rounded-md shadow-md" }, [
+  return _c("div", { staticClass: "bg-white p-6 my-2 rounded-md shadow-md" }, [
     _c("h1", { staticClass: "text-gray-500 text-md py-4" }, [
       _vm._v(
         _vm._s(_vm.productForm.name ? _vm.productForm.name : "New Product")
@@ -33556,7 +33556,7 @@ var render = function() {
         "div",
         {
           staticClass:
-            "mx-auto my-4 w-full p-2 md:w-4/5 bg-gray-200 py-8 px-4 overflow-x-auto rounded-md mt-10 shadow-inner"
+            "mx-auto my-2 w-full p-2 md:w-4/5 bg-gray-200 py-8 px-4 overflow-x-auto rounded-md shadow-inner"
         },
         [
           _c("table", { staticClass: "table-auto w-full mx-auto md:w-4/5" }, [

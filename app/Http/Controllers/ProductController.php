@@ -4,13 +4,17 @@ namespace App\Http\Controllers;
 
 use App\Models\Product;
 use App\Models\Brand;
+use App\Models\ProductImage;
+
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Redirect;
 
+use App\Traits\UploadAble;
 use Inertia\Inertia;
 
 class ProductController extends Controller
 {
+    use UploadAble;
 
     public function index()
     {
@@ -32,7 +36,7 @@ class ProductController extends Controller
         return Redirect::route('admin/products', ['message' => 'Saved.']);
     }
 
-    public function update(Request $request, Product $product)
+    public function update(Request $request)
     {
         $this->customValidation($request);
 
