@@ -6,9 +6,11 @@ use Illuminate\Http\Request;
 
 use App\Models\ProductImage;
 use App\Models\Product;
+use App\Traits\UploadAble;
 
 class ProductImageController extends Controller
 {
+    use UploadAble;
 
     public function store(Request $request)
     {

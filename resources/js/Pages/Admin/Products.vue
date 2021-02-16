@@ -13,11 +13,11 @@
                         {{ flash }}
                     </span>
 
-                    <button v-if="create || productForm.id != null" @click="create = false, resetForm()" class="btn-header mr-4">
+                    <button v-if="!tab" @click="tab = true, resetForm()" class="btn-header mr-4">
                         Back
                     </button>
 
-                    <button v-if="create == false" @click="createProduct()" class="btn-header">
+                    <button v-if="tab" @click="createProduct()" class="btn-header">
                         Create New Product
                     </button>
                 </div>
@@ -26,30 +26,32 @@
 
 
 
-        <!-- PRODUCT FORM -->
+        <div class="lg:flex">
+            <!-- PRODUCT FORM -->
 
-        <div class="lg:w-2/5 mx-auto">
-            <product-form v-if="create == true || productForm.id != null"
-                @finished="create = false, message()"
-                :brands="brands"
-                :products="products"
-                :productForm="productForm"
-                :errors="errors"
-            />
-        </div>
+            <div class="lg:w-2/5 mx-auto my-4">
+                <product-form v-if="!tab"
+                    @finished="tab = false, message()"
+                    :brands="brands"
+                    :products="products"
+                    :productForm="productForm"
+                    :errors="errors"
+                />
+            </div>
 
-        <!-- PRODUCT IMAGES -->
+            <!-- PRODUCT IMAGES -->
 
-        <div class="lg:w-2/5 mx-auto">
-            <product-images v-if="create == true || productForm.id != null"
-                :product="productForm.id"
-            />
+            <div class="lg:w-1/3 mx-auto my-8">
+                <product-images v-if="!tab"
+                    :product="productForm.id"
+                />
+            </div>
         </div>
 
         <!-- TABLE OF PRODUCTS -->
 
         <div class="mt-10">
-            <product-table v-if="create != true || productForm.id == null"
+            <product-table v-if="tab"
                 @edit="editForm($event)"
                 :productForm="productForm"
                 :products="products"
@@ -66,6 +68,7 @@
     import ProductImages from '@/Components/ProductImages'
     import ProductTable from '@/Components/ProductTable'
 
+
     export default {
         props: {
             brands: Array,
@@ -77,12 +80,12 @@
             AppLayout,
             ProductForm,
             ProductImages,
-            ProductTable
+            ProductTable,
         },
 
         data () {
             return {
-                create: false,
+                tab: true,
                 flash: null,
 
                 productForm: {
@@ -109,17 +112,19 @@
             createProduct() {
 
                 this.resetForm();
-                this.create = true;
+                this.tab = false;
 
             },
 
             editForm(product) {
 
                 // writing values to form so that user can edit them
-
                 Object.keys(this.productForm).forEach( key => {
                     this.productForm[key] = product[key];
                 });
+
+                // this gets us to the edit form
+                this.tab = false;
 
             },
 
