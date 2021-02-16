@@ -1,50 +1,61 @@
 <template>
     <app-layout>
         <template #header>
-            <h2 class="font-semibold text-xl text-gray-800 leading-tight">
-                Manage Products
-            </h2>
+            <div class="flex justify-between items-baseline">
+                <h2 class="font-semibold text-xl text-gray-800">
+                    Manage Products
+                </h2>
+                <div class="flex justify-end">
+
+                    <span v-if="flash != null"
+                        class="flex items-end text-md text-gray-700 mr-8 xyz-out"
+                        xyz="fade-100% out-delay-6 duration-6">
+                        {{ flash }}
+                    </span>
+
+                    <button v-if="create || productForm.id != null" @click="create = false, resetForm()" class="btn-header mr-4">
+                        Back
+                    </button>
+
+                    <button v-if="create == false" @click="createProduct()" class="btn-header">
+                        Create New Product
+                    </button>
+                </div>
+            </div>
         </template>
 
-        <div class="flex justify-end mr-10 mt-4">
 
-            <span v-if="flash != null"
-                class="flex items-end text-md text-gray-700 mr-8 xyz-out"
-                xyz="fade-100% out-delay-6 duration-6">
-                {{ flash }}
-            </span>
-
-            <button v-if="create || productForm.id != null" @click="create = false, resetForm()" class="btn">Back</button>
-
-            <button v-if="create == false" @click="createProduct()" class="btn">
-                Create New Product
-            </button>
-        </div>
 
         <!-- PRODUCT FORM -->
 
-        <product-form v-if="create == true || productForm.id != null"
-            @finished="create = false, message()"
-            :brands="brands"
-            :products="products"
-            :productForm="productForm"
-            :errors="errors"
-        />
+        <div class="lg:w-2/5 mx-auto">
+            <product-form v-if="create == true || productForm.id != null"
+                @finished="create = false, message()"
+                :brands="brands"
+                :products="products"
+                :productForm="productForm"
+                :errors="errors"
+            />
+        </div>
 
         <!-- PRODUCT IMAGES -->
 
-        <product-images v-if="create == true || productForm.id != null"
-            :product="productForm.id"
-        />
+        <div class="lg:w-2/5 mx-auto">
+            <product-images v-if="create == true || productForm.id != null"
+                :product="productForm.id"
+            />
+        </div>
 
         <!-- TABLE OF PRODUCTS -->
 
-        <product-table v-if="create != true || productForm.id == null"
-            @edit="editForm($event)"
-            :productForm="productForm"
-            :products="products"
-            :brands="brands"
-        />
+        <div class="mt-10">
+            <product-table v-if="create != true || productForm.id == null"
+                @edit="editForm($event)"
+                :productForm="productForm"
+                :products="products"
+                :brands="brands"
+            />
+        </div>
 
     </app-layout>
 </template>

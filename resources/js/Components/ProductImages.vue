@@ -5,9 +5,12 @@
                 ref="myVueDropzone"
                 id="dropzone"
                 :options="dropzoneOptions"
+                :useCustomSlot="true"
                 @vdropzone-sending="sending"
-                class="my-4"
-            />
+                class="rounded-md my-4"
+            >
+            <h3 class="text-xl text-gray-400 font-semibold">Upload images!</h3>
+            </vue-dropzone>
         </div>
         <div v-if="images">
             <div :key="image.id" v-for="image in images">
@@ -34,7 +37,7 @@
             product: function(newVal, oldVal) {
                 console.log('product changed: ' + newVal);
                 this.loadImages();
-        }
+            }
         },
 
         data() {
@@ -75,7 +78,7 @@
                 .catch(error => {
                     console.log(error);
                 });
-            }
+            },
         }
     }
 </script>
