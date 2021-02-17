@@ -19,8 +19,6 @@ mix.js('resources/js/app.js', 'public/js').vue()
     ])
     .webpackConfig(require('./webpack.config'));
 
-// mix.sass('resources/sass/glide.sccs', 'public/css');
-
 if (mix.inProduction()) {
     mix.version();
 }
