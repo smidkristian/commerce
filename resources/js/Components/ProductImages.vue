@@ -1,9 +1,11 @@
 <template>
     <div>
-        <vue-glide v-if="images[0] != null" :options="glideOptions">
-            <vue-glide-slide v-for="image in images" :key="image.id">
-                <img :src="'/storage/' + image.url" alt="product.img"
-                    class="object-contain" style="min-height: 400px; width: auto;">
+        <vue-glide v-if="numOfImg > 0" :options="glideOptions">
+            <vue-glide-slide v-for="image in pictures" :key="image.id">
+                <div class="flex justify-center m-4">
+                    <img :src="'/storage/' + image.url" alt="product.img"
+                    class="object-contain" style="height: 200px; width: auto;">
+                </div>
             </vue-glide-slide>
 
             <template slot="control" class="my-4">
@@ -11,6 +13,9 @@
                     class="border-r-2 border-gray-300 px-4 py-2 text-xs uppercase text-gray-700 focus:outline-none">
                     prev
                 </button>
+                <div class="px-4 py-2 text-xs uppercase text-gray-700">
+                    {{ numOfImg }} image/s
+                </div>
                 <button data-glide-dir=">"
                     class="border-l-2 border-gray-300 px-4 py-2 text-xs uppercase text-gray-700 focus:outline-none">
                     next
@@ -28,10 +33,13 @@
                 :options="dropzoneOptions"
                 :useCustomSlot="true"
                 @vdropzone-sending="sending"
-                class="rounded-md my-8"
+                class="rounded-md mt-8"
             >
                 <h3 class="text-lg text-gray-400 uppercase">Upload images!</h3>
             </vue-dropzone>
+            <div class="flex justify-end">
+                <button @click="reload()" class="btn">Confirm</button>
+            </div>
         </div>
     </div>
 </template>
@@ -44,7 +52,8 @@
 
     export default {
         props: [
-            'product'
+            'product',
+            'images'
         ],
 
         components: {
@@ -53,22 +62,15 @@
             [GlideSlide.name]: GlideSlide
         },
 
-        watch: {
-            product: function(newVal, oldVal) {
-                console.log('product changed: ' + newVal);
-                this.loadImages();
-            }
-        },
-
         data() {
 
-            let CSRF = document.head.querySelector("[name=csrf-token]").content;
             return {
-                images: null,
+                pictures: null,
+                numOfImg: null,
                 glideOptions: {
                     type: 'carousel',
                     gap: 10,
-                    perView: 3,
+                    perView: 1,
                 },
 
                 dropzoneOptions: {
@@ -76,7 +78,7 @@
                     thumbnailWidth: 150,
                     maxFilesize: 3,
                     headers: {
-                        'X-CSRF-TOKEN': CSRF
+                        'X-CSRF-TOKEN': document.head.querySelector("[name=csrf-token]").content
                     }
                 }
             }
@@ -97,13 +99,18 @@
             loadImages() {
                 axios.post(route('load-images'), { id: this.product })
                 .then(response => {
-                    this.images = response.data;
-                    console.log(this.images);
+                    this.pictures = response.data;
+                    this.numOfImg = this.pictures.length;
+                    console.log(this.pictures, this.numOfImg);
                 })
                 .catch(error => {
                     console.log(error);
                 });
             },
+
+            reload() {
+                location.reload();
+            }
         }
     }
 </script>

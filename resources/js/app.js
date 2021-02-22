@@ -10,6 +10,9 @@ Vue.mixin({ methods: { route } });
 Vue.use(InertiaPlugin);
 Vue.use(PortalVue);
 
+// Defining route so we can use $route() from Ziggy library
+Vue.prototype.$route = route
+
 const app = document.getElementById('app');
 
 new Vue({

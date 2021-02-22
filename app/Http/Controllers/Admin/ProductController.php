@@ -36,6 +36,18 @@ class ProductController extends Controller
 
         return Redirect::route('admin/products', ['message' => 'Saved.']);
     }
+    public function edit($id)
+    {
+        $product = Product::find($id);
+        $images = $product->images()->get();
+        $brands = Brand::all();
+
+        return Inertia::render('Admin/ProductForm', [
+            'brands' => $brands,
+            'product' => $product,
+            'images' => $images
+        ]);
+    }
 
     public function update(Request $request)
     {

@@ -13,59 +13,26 @@
                         {{ flash }}
                     </span>
 
-                    <button v-if="!tab" @click="tab = true, resetForm()" class="btn-header mr-4">
-                        Back
-                    </button>
-
-                    <button v-if="tab" @click="createProduct()" class="btn-header">
+                    <button v-if="table" @click="createProduct()" class="btn-header">
                         Create New Product
                     </button>
                 </div>
             </div>
         </template>
 
-
-
-        <div class="lg:flex">
-            <!-- PRODUCT FORM -->
-
-            <div class="lg:w-2/5 mx-auto my-4">
-                <product-form v-if="!tab"
-                    @finished="tab = false, message()"
-                    :brands="brands"
-                    :products="products"
-                    :productForm="productForm"
-                    :errors="errors"
-                />
-            </div>
-
-            <!-- PRODUCT IMAGES -->
-
-            <div class="lg:w-1/3 mx-auto my-8">
-                <product-images v-if="!tab"
-                    :product="productForm.id"
-                />
-            </div>
-        </div>
-
         <!-- TABLE OF PRODUCTS -->
 
         <div class="mt-10">
-            <product-table v-if="tab"
-                @edit="editForm($event)"
-                :productForm="productForm"
+            <product-table v-if="table"
                 :products="products"
                 :brands="brands"
             />
         </div>
-
     </app-layout>
 </template>
 
 <script>
     import AppLayout from '@/Layouts/AppLayout'
-    import ProductForm from '../../Components/ProductForm'
-    import ProductImages from '@/Components/ProductImages'
     import ProductTable from '@/Components/ProductTable'
 
 
@@ -78,67 +45,17 @@
 
         components: {
             AppLayout,
-            ProductForm,
-            ProductImages,
             ProductTable,
         },
 
         data () {
             return {
-                tab: true,
+                table: true,
                 flash: null,
-
-                productForm: {
-                    id: null,
-                    name: null,
-                    slug: null,
-                    sku: null,
-                    brand_id: null,
-                    color: null,
-                    quantity: null,
-                    weight: null,
-                    price: null,
-                    sale_price: null,
-                    description: null,
-                    status: 0,
-                    featured: 0,
-
-                },
             }
         },
 
         methods: {
-
-            createProduct() {
-
-                this.resetForm();
-                this.tab = false;
-
-            },
-
-            editForm(product) {
-
-                // writing values to form so that user can edit them
-                Object.keys(this.productForm).forEach( key => {
-                    this.productForm[key] = product[key];
-                });
-
-                // this gets us to the edit form
-                this.tab = false;
-
-            },
-
-            resetForm() {
-
-                Object.keys(this.productForm).forEach( key => {
-
-                    if (key == 'status' || key == 'featured') {
-                        this.productForm[key] = 0
-                    } else {
-                        this.productForm[key] = null
-                    }
-                });
-            },
 
             message() {
 

@@ -44,6 +44,7 @@ Route::middleware(['auth:sanctum', 'verified'])->group(function () {
 
     Route::post('admin/store-product', [ProductController::class, 'store'])->name('store-product');
     Route::post('admin/update-product', [ProductController::class, 'update'])->name('update-product');
+    Route::get('admin/edit-product/{id}', [ProductController::class, 'edit'])->name('edit-product');
     Route::post('admin/delete-product', [ProductController::class, 'destroy'])->name('delete-product');
 
     // PRODUCT IMAGES

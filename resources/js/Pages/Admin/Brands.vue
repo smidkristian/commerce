@@ -1,26 +1,29 @@
 <template>
     <app-layout>
         <template #header>
-            <h2 class="font-semibold text-xl text-gray-800 leading-tight">
-                Manage Brands
-            </h2>
+            <div class="flex justify-between items-baseline">
+                <h2 class="font-semibold text-xl text-gray-800">
+                    Manage Brands
+                </h2>
+                <div class="flex justify-end">
+
+                    <div v-if="create == false">
+                        <span v-if="storeConfirmed || updateConfirmed" class="mr-6 xyz-out text-md" xyz="fade-100% out-delay-6 duration-6">Saved.</span>
+
+                        <button @click="createBrand()" class="btn-header">
+                            Create New Brand
+                        </button>
+                    </div>
+                    <div v-else>
+                        <button @click="create = false" class="btn-header">
+                            Back
+                        </button>
+                    </div>
+                </div>
+            </div>
         </template>
 
-        <div class="flex justify-end mt-6 mr-2 md:mr-10" id="editing">
 
-            <div v-if="create == false">
-                <span v-if="storeConfirmed || updateConfirmed" class="mr-6 xyz-out text-md" xyz="fade-100% out-delay-6 duration-6">Saved.</span>
-
-                <button @click="createBrand()" class="btn">
-                    Create New Brand
-                </button>
-            </div>
-            <div v-else>
-                <button @click="create = false" class="btn">
-                    Back
-                </button>
-            </div>
-        </div>
 
         <!-- _______________________________________________________________________________________________________________ CREATE NEW BRAND -->
 
@@ -175,20 +178,12 @@ import AppLayout from '@/Layouts/AppLayout'
                 this.editing = this.editBrandForm.id = brand.id;
                 this.editBrandForm.name = brand.name;
                 this.editBrandForm.description = brand.description;
-
-                document.querySelector('#editing').scrollIntoView({
-                behavior: 'smooth'
-                });
             },
             updateBrand(id) {
                 this.$inertia.post(route('update-brand'), this.editBrandForm, {
                     onSuccess: () => {
                         this.updateConfirmed = true;
                         setTimeout(() => this.updateConfirmed = false, 2000);
-
-                        document.querySelector('#' + id).scrollIntoView({
-                        behavior: 'smooth'
-                        });
 
                         this.resetEditForm();
                     }
@@ -231,6 +226,9 @@ import AppLayout from '@/Layouts/AppLayout'
     }
     .action {
         padding: 0;
+    }
+    .action:hover {
+        background-color: transparent;
     }
     .description {
         max-width: 5vw !important;
