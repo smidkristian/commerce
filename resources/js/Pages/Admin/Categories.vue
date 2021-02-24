@@ -3,45 +3,41 @@
         <template #header>
             <div class="flex justify-between items-baseline">
                 <h2 class="font-semibold text-xl text-gray-800">
-                    Manage Brands
+                    Manage Categories
                 </h2>
                 <div class="flex justify-end">
 
-                    <span v-if="flashMessage != null"
+                    <span v-if="flash != null"
                         class="flex items-end text-md text-gray-700 mr-8 xyz-out"
                         xyz="fade-100% out-delay-6 duration-6">
-                        {{ flashMessage }}
+                        {{ flash }}
                     </span>
 
-                    <inertia-link :href="route('create-brand')" class="btn-header">
-                        Create New Brand
-                    </inertia-link>
-
+                    <button v-if="table" @click="createCategory()" class="btn-header">
+                        Create New Category
+                    </button>
                 </div>
             </div>
         </template>
 
-        <!-- TABLE OF BRANDS -->
+        <!-- TABLE OF CATEGORIES -->
 
-        <brand-table :brands="brands" />
+        <category-table :categories="categories" />
 
     </app-layout>
 </template>
 
 <script>
     import AppLayout from '@/Layouts/AppLayout'
-    import BrandTable from '../../Components/brands/BrandTable';
+    import CategoryTable from '@/Components/categories/CategoryTable';
 
     export default {
-        props: {
-            brands: Array,
-
-            errors: Object
-        },
-
+        props: [
+            'categories'
+        ],
         components: {
             AppLayout,
-            BrandTable
+            CategoryTable
         },
 
         data () {

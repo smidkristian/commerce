@@ -5,7 +5,6 @@ namespace App\Http\Controllers\Admin;
 use App\Http\Controllers\Controller;
 use App\Models\Product;
 use App\Models\Brand;
-use App\Models\ProductImage;
 
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Redirect;
@@ -20,7 +19,7 @@ class ProductController extends Controller
     public function index()
     {
         $brands = Brand::all();
-        $products = Product::all();
+        $products = Product::orderBy('id', 'desc')->get();
 
         return Inertia::render('Admin/Products', [
             'brands' => $brands,
@@ -28,14 +27,25 @@ class ProductController extends Controller
         ]);
     }
 
+
+    public function create()
+    {
+        $brands = Brand::all();
+
+        return Inertia::render('Admin/ProductForm', [
+            'brands' => $brands
+        ]);
+    }
+
     public function store(Request $request)
     {
         $this->customValidation($request);
 
-        Product::create($request->except('id'));
+        $newProduct = Product::create($request->all());
 
-        return Redirect::route('admin/products', ['message' => 'Saved.']);
+        return Redirect::route('admin-products', ['message' => 'Created.']);
     }
+
     public function edit($id)
     {
         $product = Product::find($id);
@@ -57,14 +67,14 @@ class ProductController extends Controller
 
         $target->update($request->all());
 
-        return Redirect::route('admin/products', ['message' => 'Updated.']);
+        return Redirect::route('admin-products', ['message' => 'Updated.']);
     }
 
     public function destroy(Request $request)
     {
         Product::destroy($request->id);
 
-        return Redirect::route('admin/products');
+        return Redirect::route('admin-products', ['message' => 'Deleted.']);
     }
 
     public function customValidation($product)

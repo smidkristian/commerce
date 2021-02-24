@@ -1,39 +1,35 @@
 <template>
     <app-layout>
         <template #header>
-            <div class="flex justify-between items-baseline">
+            <div class="flex justify-between">
                 <h2 class="font-semibold text-xl text-gray-800">
                     Manage Products
                 </h2>
                 <div class="flex justify-end">
 
-                    <span v-if="flash != null"
-                        class="flex items-end text-md text-gray-700 mr-8 xyz-out"
-                        xyz="fade-100% out-delay-6 duration-6">
-                        {{ flash }}
+                    <span v-if="flashMessage != null"
+                        class="flex text-lg text-gray-800 mr-8 xyz-out"
+                        xyz="fade-100% out-delay-10 duration-10">
+                        {{ flashMessage }}
                     </span>
 
-                    <button v-if="table" @click="createProduct()" class="btn-header">
+                    <inertia-link :href="route('create-product')" class="btn-header">
                         Create New Product
-                    </button>
+                    </inertia-link>
                 </div>
             </div>
         </template>
 
         <!-- TABLE OF PRODUCTS -->
 
-        <div class="mt-10">
-            <product-table v-if="table"
-                :products="products"
-                :brands="brands"
-            />
-        </div>
+        <product-table :products="products" :brands="brands" />
+
     </app-layout>
 </template>
 
 <script>
     import AppLayout from '@/Layouts/AppLayout'
-    import ProductTable from '@/Components/ProductTable'
+    import ProductTable from '@/Components/products/ProductTable'
 
 
     export default {
@@ -50,9 +46,12 @@
 
         data () {
             return {
-                table: true,
-                flash: null,
+                flashMessage: null,
             }
+        },
+
+        mounted() {
+            this.message();
         },
 
         methods: {
@@ -63,8 +62,8 @@
 
                 let urlParams = new URLSearchParams(window.location.search);
                 if (urlParams.has('message')) {
-                    this.flash = urlParams.get('message');
-                    setTimeout(() => this.flash = null, 2000);
+                    this.flashMessage = urlParams.get('message');
+                    setTimeout(() => this.flashMessage = null, 2000);
                 }
             }
         }

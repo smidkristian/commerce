@@ -1,5 +1,6 @@
 <template>
-    <div class="mx-auto my-2 w-full p-2 md:w-4/5 bg-gray-200 py-8 px-4 overflow-x-auto rounded-md shadow-inner">
+    <div class="mx-auto mt-10 mb-4 w-full p-2 md:w-4/5 bg-gray-200 py-8 px-4 overflow-x-auto rounded-md shadow-inner xyz-in"
+            xyz="fade-100% duration-10">
         <table class="table-auto w-full mx-auto md:w-11/12">
             <thead class="bg-gray-100 shadow-sm mb-4">
                 <tr>
@@ -88,7 +89,7 @@
                     </td>
                     <td class="text-center px-2 action">
                         <div class="flex justify-center items-center">
-                            <inertia-link :href="$route('edit-product', product.id)" class="bg-gray-800 uppercase font-semibold text-gray-100 text-xs rounded-md py-2 px-4">Edit</inertia-link>
+                            <inertia-link :href="$route('edit-product', product.id)" class="btn-header">Edit</inertia-link>
                         </div>
                     </td>
                 </tr>

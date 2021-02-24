@@ -3,26 +3,25 @@
 namespace App\Http\Controllers\Admin;
 
 use App\Http\Controllers\Controller;
-use App\Models\Brand;
+use App\Models\Category;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Redirect;
-
 use Inertia\Inertia;
 
-class BrandController extends Controller
+class CategoryController extends Controller
 {
-
     public function index()
     {
-        $brands = Brand::orderBy('id', 'desc')->get();
+        $categories = Category::all();
 
-        return Inertia::render('Admin/Brands', [
-            'brands' => $brands,
+        return Inertia::render('Admin/Categories', [
+            'categories' => $categories
         ]);
     }
+
     public function create()
     {
-        return Inertia::render('Admin/BrandForm');
+        return Inertia::render('Admin/CategoryForm');
     }
 
     public function store(Request $request)
@@ -31,17 +30,17 @@ class BrandController extends Controller
             'name' => ['required'],
         ]);
 
-        Brand::create($request->all());
+        Category::create($request->all());
 
-        return Redirect::route('admin-brands');
+        return Redirect::route('admin-categories');
     }
 
     public function edit($id)
     {
-        $brand = Brand::find($id);
+        $Category = Category::find($id);
 
-        return Inertia::render('Admin/BrandForm', [
-            'brand' => $brand
+        return Inertia::render('Admin/CategoryForm', [
+            'category' => $Category
         ]);
     }
 
@@ -52,17 +51,17 @@ class BrandController extends Controller
             'name' => ['required'],
         ]);
 
-        $target = Brand::find($request->id);
+        $target = Category::find($request->id);
 
         $target->update($request->all());
 
-        return Redirect::route('admin-brands');
+        return Redirect::route('admin-categories');
     }
 
     public function destroy(Request $request)
     {
-        Brand::destroy($request->id);
+        Category::destroy($request->id);
 
-        return Redirect::route('admin-brands');
+        return Redirect::route('admin-categories');
     }
 }

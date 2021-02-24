@@ -17,7 +17,7 @@
                             Hlavní
                         </jet-nav-link>
 
-                        <jet-nav-link :href="route('admin/dashboard')" :active="route().current('admin/dashboard')">
+                        <jet-nav-link :href="route('admin-dashboard')" :active="route().current('admin-dashboard')">
                             Admin
                         </jet-nav-link>
 
@@ -42,7 +42,7 @@
                         Hlavní
                     </jet-responsive-nav-link>
 
-                    <jet-responsive-nav-link :href="route('admin/dashboard')" :active="route().current('admin/dashboard')">
+                    <jet-responsive-nav-link :href="route('admin-dashboard')" :active="route().current('admin-dashboard')">
                         Admin
                     </jet-responsive-nav-link>
                 </div>
